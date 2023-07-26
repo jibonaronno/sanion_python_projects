@@ -66,8 +66,8 @@ class SRVR(object):
         for _i in range(7):
             #xrr = np.array([1, 2, 3, 4, 5, 6])
             #yrr = np.array([1, 2, 3, 4, 5, 6])
-            xrr = np.linspace(0, 3000, 8)
-            yrr = np.linspace(0, 70000, 8)
+            xrr = np.linspace(0, 1800, 8)
+            yrr = np.linspace(-4000, 5000, 8)
             self.subplots.append(plt.subplots())
             self.subplot_lines.append(self.subplots[_i][1].plot(xrr, yrr)[0])
         for plot in self.subplots:
@@ -147,6 +147,7 @@ class SRVR(object):
             xaxis_arr = []
             yaxis_arr = []
             start_address = _start_address
+            total_size = 0
             ix = 1
             ix = 0
             dx = ix
@@ -157,13 +158,21 @@ class SRVR(object):
                 regs_1 = self.clnt.read_holding_registers(_start_address, _reg_count)
                 if len(regs_1) > 0:
                     self.single_reg = regs_1[0]
+                total_size = total_size + len(regs_1)
                 for reg in regs_1:
                     if(is_twoscompl):
-                        self.voltwave.append(str(_start_address + ix) + "," + str(self.twos_comp(reg, 16)) + "\n")
+                        if reg > 0x7FFF:
+                            self.voltwave.append(str(_start_address + ix) + "," + str(((reg & 0x7FFF) - 0x7FFF)) + "\n")
+                        else:
+                            self.voltwave.append(str(_start_address + ix) + "," + str(reg) + "\n")
+                            #self.voltwave.append(str(_start_address + ix) + "," + str(self.twos_comp(reg, 16)) + "\n")
                     else:
                         self.voltwave.append(str(_start_address + ix) + "," + str(reg) + "\n")
                     xaxis_arr.append(dx)
-                    yaxis_arr.append(reg)
+                    if reg > 0xEFFF:
+                        yaxis_arr.append((reg & 0x7FFF) - 0x7FFF)
+                    else:
+                        yaxis_arr.append(reg)
                     ix = ix + 1
                     dx = dx + 1
                 _start_address = _start_address + _reg_count
@@ -173,6 +182,7 @@ class SRVR(object):
                 if _start_address > (start_address + ((_block_count - 1) * _reg_count)):
                     break
             #pprint(regs_1)
+            print(" SIZE : ", str(total_size))
             if _filename != "NA":
                 with open(_filename, "w") as csvfile:
                     for line in self.voltwave:
@@ -204,28 +214,28 @@ class SRVR(object):
             #self.subplots.append(subplt)
 
     def readTripCoil1(self):
-        self.readRegisters(1300, 64, 36, "trip1.csv", is_plot=True, plot_index=0)
+        self.readRegisters(1300, 64, 36, "trip1.csv", is_plot=True, plot_index=0, is_twoscompl=True)
 
     def readTripCoil2(self):
-        self.readRegisters(3604, 64, 36, "trip2.csv", is_plot=True, plot_index=1)
+        self.readRegisters(3604, 64, 36, "trip2.csv", is_plot=True, plot_index=1, is_twoscompl=True)
 
     def readPhaseACurr(self):
-        subplt = self.readRegisters(10516, 64, 36, "PhaseA_Curr.csv", is_plot=True, plot_index=2)
+        subplt = self.readRegisters(10516, 64, 36, "PhaseA_Curr.csv", is_plot=True, plot_index=2, is_twoscompl=True)
         #if subplt is not None:
             #self.subplots.append(subplt)
 
     def readPhaseBCurr(self):
-        subplt = self.readRegisters(12820, 64, 36, "PhaseB_Curr.csv", is_plot=True, plot_index=3)
+        subplt = self.readRegisters(12820, 64, 36, "PhaseB_Curr.csv", is_plot=True, plot_index=3, is_twoscompl=True)
         #if subplt is not None:
             #self.subplots.append(subplt)
 
     def readPhaseCCurr(self):
-        subplt = self.readRegisters(15124, 64, 36, "PhaseC_Curr.csv", is_plot=True, plot_index=4)
+        subplt = self.readRegisters(15124, 64, 36, "PhaseC_Curr.csv", is_plot=True, plot_index=4, is_twoscompl=True)
         #if subplt is not None:
             #self.subplots.append(subplt)
 
     def readVoltWave(self):
-        subplt = self.readRegisters(8212, 64, 36, "voltwave.csv", is_plot=True, plot_index=5)
+        subplt = self.readRegisters(8212, 64, 36, "voltwave.csv", is_plot=True, plot_index=5, is_twoscompl=True)
         #if subplt is not None:
             #self.subplots.append(subplt)
 
@@ -235,7 +245,7 @@ class SRVR(object):
             #self.subplots.append(subplt)
 
     def readCloseCoil(self):
-        subplt = self.readRegisters(5908, 64, 36, "closecoil.csv", is_plot=True, plot_index=6)
+        subplt = self.readRegisters(5908, 64, 36, "closecoil.csv", is_plot=True, plot_index=6, is_twoscompl=True)
         #if subplt is not None:
             #self.subplots.append(subplt)
 
