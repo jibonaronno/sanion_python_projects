@@ -96,8 +96,8 @@ class BinaryFileReader(object):
 
     def getHeader(self):
         header = {}
-        hdr_array = bytearray(0)
-        '''
+        hdr_array = [] #bytearray(0)
+
         hdr_array.append(unpack(">B", self.ficontent[0:1])[0]) # Event type
         hdr_array.append(unpack(">I", self.ficontent[1:5])[0]) # Event Time - year month day ...
         hdr_array.append(unpack(">I", self.ficontent[5:9])[0]) # Event Time ms
@@ -125,7 +125,8 @@ class BinaryFileReader(object):
         hdr_array.append(unpack(">I", self.ficontent[90:94])[0])  # Op Count
         hdr_array.append(unpack(">H", self.ficontent[94:96])[0])  # Sample Per Cycle
         hdr_array.append(unpack(">H", self.ficontent[96:98])[0])  # Cycle Count
-        
+
+        '''
         self.ficontent[0:1])[0]) # Event type
         self.ficontent[1:5])[0]) # Event Time - year month day ...
         self.ficontent[5:9])[0]) # Event Time ms
@@ -155,6 +156,7 @@ class BinaryFileReader(object):
         self.ficontent[96:98])[0])  # Cycle Count
         '''
 
+        '''
         hdr_array.extend(self.ficontent[0:1])  # Event type
         hdr_array.extend(self.ficontent[5:1])  # Event Time - year month day ...
         hdr_array.extend(self.ficontent[9:5])  # Event Time ms
@@ -182,7 +184,7 @@ class BinaryFileReader(object):
         hdr_array.extend(self.ficontent[94:90])  # Op Count
         hdr_array.extend(self.ficontent[96:94])  # Sample Per Cycle
         hdr_array.extend(self.ficontent[98:96])  # Cycle Count
-
+        '''
         return hdr_array
         pass
 
@@ -205,6 +207,10 @@ class BinaryFileReader(object):
             binary_file.write(header)
         pass
 
+    def saveToCsv(self, content, filename):
+        with open(filename, "w") as text_file:
+            text_file.write(content)
+
 class Viewer(object):
     def __init__(self):
         self.dash = DASH(self)
@@ -222,13 +228,15 @@ def ArraySwap16(arr):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     frdr = BinaryFileReader()
-    frdr.readFil('K_S623_GLU101_CH05_CBOP_3551284_22_20230712031752.dat') #("01_22_20230706160141.dat")
+    frdr.readFil('K_S623_GLU101_CH05_CBOP_3551284_22_20230712011321.dat') #("01_22_20230706160141.dat")
     #frdr.readFil("01_22_20230706160141.dat")
 
     frdr.getHeader()
 
     print(" Cycle Count : ", unpack("<H", frdr.ficontent[96:98])[0])
     print(" Cycle Count Hex 0x{0:04x}".format(unpack("<H", frdr.ficontent[96:98])[0]))
+
+    csv = ''
 
     #frdr.saveToLittleEndian("K_S623_GLU101_CH05_CBOP_3551284_22_20230712031752.converted.dat")
 
@@ -241,30 +249,73 @@ if __name__ == '__main__':
     integers = unpack('<' + 'h' * (len(barray) // 2), barray) #Source is big Endian.
     plotter.addPlot(integers)
 
+    # csv += "Trip1\n"
+    # for i in integers:
+    #     csv += str(i) + '\n'
+    # csv += '\n,'
+
     idxA += 4608
     barray = frdr.ficontent[idxA:idxA+4608]
-    integers = unpack('<' + 'h' * (len(barray) // 2), barray)
-    plotter.addPlot(integers)
+    integers2 = unpack('<' + 'h' * (len(barray) // 2), barray)
+    plotter.addPlot(integers2)
+
+    # csv += "Trip2\n"
+    # for i in integers:
+    #     csv += str(i) + '\n'
+    # csv += '\n,'
 
     idxA += 4608
     barray = frdr.ficontent[idxA:idxA + 4608]
-    integers = unpack('<' + 'h' * (len(barray) // 2), barray)
-    plotter.addPlot(integers)
+    integers3 = unpack('<' + 'h' * (len(barray) // 2), barray)
+    plotter.addPlot(integers3)
+
+    # csv += "Close\n"
+    # for i in integers:
+    #     csv += str(i) + '\n'
+    # csv += '\n,'
 
     idxA += 4608
     barray = frdr.ficontent[idxA:idxA + 4608]
-    integers = unpack('<' + 'h' * (len(barray) // 2), barray)
-    plotter.addPlot(integers)
+    integers4 = unpack('<' + 'h' * (len(barray) // 2), barray)
+    plotter.addPlot(integers4)
+
+    # csv += "PhaseA\n"
+    # for i in integers:
+    #     csv += str(i) + '\n'
+    # csv += '\n,'
 
     idxA += 4608
     barray = frdr.ficontent[idxA:idxA + 4608]
-    integers = unpack('<' + 'h' * (len(barray) // 2), barray)
-    plotter.addPlot(integers)
+    integers5 = unpack('<' + 'h' * (len(barray) // 2), barray)
+    plotter.addPlot(integers5)
+
+    # csv += "PhaseB\n"
+    # for i in integers:
+    #     csv += str(i) + '\n'
+    # csv += '\n,'
 
     idxA += 4608
     barray = frdr.ficontent[idxA:idxA + 4608]
-    integers = unpack('<' + 'h' * (len(barray) // 2), barray)
-    plotter.addPlot(integers)
+    integers6 = unpack('<' + 'h' * (len(barray) // 2), barray)
+    plotter.addPlot(integers6)
+
+    idxA += 4608
+    barray = frdr.ficontent[idxA:idxA + 2304]
+    print(len(barray))
+    integers7 = unpack('>' + 'b' * (len(barray)), barray)
+    #plotter.addPlot(integers6)
+
+    # csv += "PhaseC\n"
+    # for i in integers:
+    #     csv += str(i) + '\n'
+    # csv += '\n'
+
+    csv = "Trip1,Trip2,Close,PhaseA,PhaseB,PhaseC,Contact\n"
+
+    for i in range(len(integers)):
+        csv += str(integers[i]) + "," + str(integers2[i]) + "," + str(integers3[i]) + "," + str(integers4[i]) + "," + str(integers5[i]) + "," + str(integers6[i]) + "," + str(integers7[i]) + "\n"
+
+    frdr.saveToCsv(csv, "K_S623_GLU101_CH05_CBOP_3551284_22_20230712011321.csv")
 
     plotter.Show()
 
