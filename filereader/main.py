@@ -228,7 +228,7 @@ def ArraySwap16(arr):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     frdr = BinaryFileReader()
-    frdr.readFil('K_S623_GLU101_CH05_CBOP_3551284_22_20230712011321.dat') #("01_22_20230706160141.dat")
+    frdr.readFil('01_22_20230731181033.dat') #("01_22_20230706160141.dat")
     #frdr.readFil("01_22_20230706160141.dat")
 
     frdr.getHeader()
@@ -246,7 +246,7 @@ if __name__ == '__main__':
     idxB = idxA + 4608
     plotter = SubPlots()
     barray = frdr.ficontent[idxA:idxA+4608]
-    integers = unpack('<' + 'h' * (len(barray) // 2), barray) #Source is big Endian.
+    integers = unpack('>' + 'h' * (len(barray) // 2), barray) #Source is big Endian.
     plotter.addPlot(integers)
 
     # csv += "Trip1\n"
@@ -256,7 +256,7 @@ if __name__ == '__main__':
 
     idxA += 4608
     barray = frdr.ficontent[idxA:idxA+4608]
-    integers2 = unpack('<' + 'h' * (len(barray) // 2), barray)
+    integers2 = unpack('>' + 'h' * (len(barray) // 2), barray)
     plotter.addPlot(integers2)
 
     # csv += "Trip2\n"
@@ -266,7 +266,7 @@ if __name__ == '__main__':
 
     idxA += 4608
     barray = frdr.ficontent[idxA:idxA + 4608]
-    integers3 = unpack('<' + 'h' * (len(barray) // 2), barray)
+    integers3 = unpack('>' + 'h' * (len(barray) // 2), barray)
     plotter.addPlot(integers3)
 
     # csv += "Close\n"
@@ -276,7 +276,7 @@ if __name__ == '__main__':
 
     idxA += 4608
     barray = frdr.ficontent[idxA:idxA + 4608]
-    integers4 = unpack('<' + 'h' * (len(barray) // 2), barray)
+    integers4 = unpack('>' + 'h' * (len(barray) // 2), barray)
     plotter.addPlot(integers4)
 
     # csv += "PhaseA\n"
@@ -286,7 +286,7 @@ if __name__ == '__main__':
 
     idxA += 4608
     barray = frdr.ficontent[idxA:idxA + 4608]
-    integers5 = unpack('<' + 'h' * (len(barray) // 2), barray)
+    integers5 = unpack('>' + 'h' * (len(barray) // 2), barray)
     plotter.addPlot(integers5)
 
     # csv += "PhaseB\n"
@@ -296,7 +296,7 @@ if __name__ == '__main__':
 
     idxA += 4608
     barray = frdr.ficontent[idxA:idxA + 4608]
-    integers6 = unpack('<' + 'h' * (len(barray) // 2), barray)
+    integers6 = unpack('>' + 'h' * (len(barray) // 2), barray)
     plotter.addPlot(integers6)
 
     idxA += 4608
@@ -315,7 +315,7 @@ if __name__ == '__main__':
     for i in range(len(integers)):
         csv += str(integers[i]) + "," + str(integers2[i]) + "," + str(integers3[i]) + "," + str(integers4[i]) + "," + str(integers5[i]) + "," + str(integers6[i]) + "," + str(integers7[i]) + "\n"
 
-    frdr.saveToCsv(csv, "K_S623_GLU101_CH05_CBOP_3551284_22_20230712011321.csv")
+    frdr.saveToCsv(csv, "01_22_20230731171131.csv")
 
     plotter.Show()
 
