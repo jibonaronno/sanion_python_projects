@@ -228,7 +228,7 @@ def ArraySwap16(arr):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     frdr = BinaryFileReader()
-    frdr.readFil('01_22_20230731181033.dat') #("01_22_20230706160141.dat")
+    frdr.readFil('01_22_20230802102413.dat') #("01_22_20230706160141.dat")
     #frdr.readFil("01_22_20230706160141.dat")
 
     frdr.getHeader()
@@ -242,7 +242,11 @@ if __name__ == '__main__':
 
     #frdr.readFil("01_22_19991129150003.dat")
     #frdr.printContent_16()
-    idxA = 98
+    '''
+    File index should start from 98. But index from 98 is showing some wrong value at the 
+    beginning of the graph. 
+    '''
+    idxA = 104
     idxB = idxA + 4608
     plotter = SubPlots()
     barray = frdr.ficontent[idxA:idxA+4608]
@@ -312,10 +316,10 @@ if __name__ == '__main__':
 
     csv = "Trip1,Trip2,Close,PhaseA,PhaseB,PhaseC,Contact\n"
 
-    for i in range(len(integers)):
-        csv += str(integers[i]) + "," + str(integers2[i]) + "," + str(integers3[i]) + "," + str(integers4[i]) + "," + str(integers5[i]) + "," + str(integers6[i]) + "," + str(integers7[i]) + "\n"
-
-    frdr.saveToCsv(csv, "01_22_20230731171131.csv")
+    # for i in range(len(integers)):
+    #     csv += str(integers[i]) + "," + str(integers2[i]) + "," + str(integers3[i]) + "," + str(integers4[i]) + "," + str(integers5[i]) + "," + str(integers6[i]) + "," + str(integers7[i]) + "\n"
+    #
+    # frdr.saveToCsv(csv, "01_22_20230731171131.csv")
 
     plotter.Show()
 
