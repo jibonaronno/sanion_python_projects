@@ -70,10 +70,36 @@ class DASH(object):
     def show(self):
         self.root.mainloop()
 
-
 class BinaryFileReader(object):
     def __init__(self):
         self.ficontent = None
+        self.str_elements = ["Event type                         : ",
+                            "Event Time - year month day ...    : ",
+                            "Event Time ms                      : ",
+                            "Alert Level                        : ",
+                            "Contact Duty A. Breaking Current A : ",
+                            "Contact Duty B. Breaking Current B : ",
+                            "Contact Duty C. Breaking Current C : ",
+                            "Commulative Current A              : ",
+                            "Commulative Current B              : ",
+                            "Commulative Current C              : ",
+                            "t1 integral                        : ",
+                            "t1 max                             : ",
+                            "t1 fem time                        : ",
+                            "t2 integral                        : ",
+                            "t2 max                             : ",
+                            "t2 fem time                        : ",
+                            "close coil integral                : ",
+                            "close coil max                     : ",
+                            "close fem time                     : ",
+                            "Acontact op time                   : ",
+                            "Bcontact op time                   : ",
+                            "Block By phase A / input time      : ",
+                            "Block By phase B / input time      : ",
+                            "Block By phase C / input time      : ",
+                            "Op Count                           : ",
+                            "Sample Per Cycle                   : ",
+                            "Cycle Count                        : "]
         pass
 
     def readFile(self, finame):
@@ -99,7 +125,7 @@ class BinaryFileReader(object):
         hdr_array = [] #bytearray(0)
 
         hdr_array.append(unpack(">B", self.ficontent[0:1])[0]) # Event type
-        hdr_array.append(unpack(">I", self.ficontent[1:5])[0]) # Event Time - year month day ...
+        hdr_array.append(unpack("<I", self.ficontent[1:5])) # Event Time - year month day ...
         hdr_array.append(unpack(">I", self.ficontent[5:9])[0]) # Event Time ms
         hdr_array.append(unpack(">B", self.ficontent[9:10])[0])  # Alert Level
         hdr_array.append(unpack(">f", self.ficontent[10:14])[0])  # Contact Duty A. Breaking Current A
@@ -228,13 +254,19 @@ def ArraySwap16(arr):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     frdr = BinaryFileReader()
-    frdr.readFil('01_22_20230802102413.dat') #("01_22_20230706160141.dat")
+    frdr.readFil('01_22_20230804153352.dat') #("01_22_20230706160141.dat")
     #frdr.readFil("01_22_20230706160141.dat")
 
     frdr.getHeader()
 
     print(" Cycle Count : ", unpack("<H", frdr.ficontent[96:98])[0])
     print(" Cycle Count Hex 0x{0:04x}".format(unpack("<H", frdr.ficontent[96:98])[0]))
+
+    hdrr = frdr.getHeader()
+    lidxA = 0
+    for ele in frdr.str_elements:
+        print(ele, " ", hdrr[lidxA])
+        lidxA += 1
 
     csv = ''
 
