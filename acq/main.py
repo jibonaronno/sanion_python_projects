@@ -53,7 +53,7 @@ class DASH(object):
 class SRVR(object):
     def __init__(self):
         #self.srvr = ModbusServer("localhost", 100, no_block=False)
-        self.clnt = ModbusClient(host='192.168.10.100', port=100, auto_open=False, debug=False)
+        self.clnt = ModbusClient(host='192.168.247.100', port=100, auto_open=False, debug=False)
         #self.__address = 8212
         self.__address = 10516
         #self.__address = 17428
@@ -230,22 +230,21 @@ class SRVR(object):
             #self.subplots.append(subplt)
 
     def readPhaseCCurr(self):
-        subplt = self.readRegisters(15124, 64, 36, "PhaseC_Curr.csv", is_plot=True, plot_index=4, is_twoscompl=True)
-        #if subplt is not None:
-            #self.subplots.append(subplt)
+        #subplt = self.readRegisters(15124, 64, 36, "PhaseC_Curr.csv", is_plot=True, plot_index=4, is_twoscompl=True)
+        subplt = self.readRegisters(15124, 64, 36, "PhaseC_Curr.csv") #, is_plot=True, plot_index=4, is_twoscompl=True)
 
     def readVoltWave(self):
-        subplt = self.readRegisters(8212, 64, 36, "voltwave.csv", is_plot=True, plot_index=5, is_twoscompl=True)
+        subplt = self.readRegisters(8212, 64, 36, "voltwave.csv", is_plot=False, plot_index=5, is_twoscompl=True)
         #if subplt is not None:
             #self.subplots.append(subplt)
 
     def readInitContact(self):
-        subplt = self.readRegisters(17428, 64, 18, "InitContact.csv", is_plot=True)
+        subplt = self.readRegisters(17428, 64, 18, "InitContact.csv", is_plot=True, plot_index=5, is_twoscompl=True)
         #if subplt is not None:
             #self.subplots.append(subplt)
 
     def readCloseCoil(self):
-        subplt = self.readRegisters(5908, 64, 36, "closecoil.csv", is_plot=True, plot_index=6, is_twoscompl=True)
+        subplt = self.readRegisters(5908, 64, 36, "closecoil.csv", is_plot=True, plot_index=4, is_twoscompl=True)
         #if subplt is not None:
             #self.subplots.append(subplt)
 
@@ -259,6 +258,7 @@ class SRVR(object):
             self.readTripCoil2()
             self.readCloseCoil()
             self.readVoltWave()
+            self.readInitContact()
             self.readPhaseACurr()
             self.readPhaseBCurr()
             self.readPhaseCCurr()
@@ -274,6 +274,7 @@ if __name__ == '__main__':
         srvr.readTripCoil2()
         srvr.readCloseCoil()
         srvr.readVoltWave()
+        srvr.readInitContact()
         srvr.readPhaseACurr()
         srvr.readPhaseBCurr()
         srvr.readPhaseCCurr()

@@ -22,7 +22,7 @@ class SubPlots(object):
     def addPlot(self, yarr):
         #xarr = np.arange(0, len(yarr), 1)
         xarr = np.linspace(1, len(yarr), len(yarr))
-        plotA = plt.subplot(2, 3, self.indx)
+        plotA = plt.subplot(2, 1, self.indx)
         self.indx = self.indx + 1
         print("LEN X : ", str(len(xarr)), " LEN Y : ", str(len(yarr)))
         x = np.array(xarr)
@@ -258,10 +258,14 @@ def ArraySwap16(arr):
 if __name__ == '__main__':
     frdr = BinaryFileReader()
     #frdr.readFil('D:\\ClientProc IEC61850\\61850_CFG\\LOG\\61850\\COMTRADE\\Sanion_154kV_GIS_D01_2A_192.168.10.104\\01_22_20230811153910.dat') #("01_22_20230706160141.dat")
-    frdr.readFil("C:\\Shared\\01_22_20230821140856.dat")
+    #frdr.readFil("C:\\Shared\\01_22_20230906113007322.dat")
+    #frdr.readFil("4_20011103064414_1.dat") 4_20011001051421_1.dat
+    #frdr.readFil("4_20011001051421_1.dat")
+    frdr.readFil("C:\\Shared\\01_22_20230906132239945.dat")
 
+
+    '''
     frdr.getHeader()
-
     print(" Cycle Count : ", unpack("<H", frdr.ficontent[96:98])[0])
     print(" Cycle Count Hex 0x{0:04x}".format(unpack("<H", frdr.ficontent[96:98])[0]))
 
@@ -270,8 +274,9 @@ if __name__ == '__main__':
     for ele in frdr.str_elements:
         print(ele, " ", hdrr[lidxA])
         lidxA += 1
-
+    
     csv = ''
+    '''
 
     #frdr.saveToLittleEndian("K_S623_GLU101_CH05_CBOP_3551284_22_20230712031752.converted.dat")
 
@@ -282,7 +287,7 @@ if __name__ == '__main__':
     beginning of the graph. 
     '''
     idxA = 98
-    idxB = idxA + 4608
+    idxB = idxA + 4608 # 7680
     plotter = SubPlots()
     barray = frdr.ficontent[idxA:idxA+4608]
     integers = unpack('>' + 'h' * (len(barray) // 2), barray) #Source is big Endian.
@@ -298,6 +303,7 @@ if __name__ == '__main__':
     integers2 = unpack('>' + 'h' * (len(barray) // 2), barray)
     plotter.addPlot(integers2)
 
+    '''
     # csv += "Trip2\n"
     # for i in integers:
     #     csv += str(i) + '\n'
@@ -342,6 +348,7 @@ if __name__ == '__main__':
     barray = frdr.ficontent[idxA:idxA + 2304]
     print(len(barray))
     integers7 = unpack('>' + 'b' * (len(barray)), barray)
+    '''
     #plotter.addPlot(integers6)
 
     # csv += "PhaseC\n"
