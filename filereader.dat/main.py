@@ -22,7 +22,7 @@ class SubPlots(object):
     def addPlot(self, yarr):
         #xarr = np.arange(0, len(yarr), 1)
         xarr = np.linspace(1, len(yarr), len(yarr))
-        plotA = plt.subplot(2, 1, self.indx)
+        plotA = plt.subplot(4, 2, self.indx)
         self.indx = self.indx + 1
         print("LEN X : ", str(len(xarr)), " LEN Y : ", str(len(yarr)))
         x = np.array(xarr)
@@ -261,7 +261,8 @@ if __name__ == '__main__':
     #frdr.readFil("C:\\Shared\\01_22_20230906113007322.dat")
     #frdr.readFil("4_20011103064414_1.dat") 4_20011001051421_1.dat
     #frdr.readFil("4_20011001051421_1.dat")
-    frdr.readFil("C:\\Shared\\01_22_20230906132239945.dat")
+    frdr.readFil("C:\\Shared\\01_22_20231017164427290.dat")
+    #frdr.readFil("01_22_20231103142325605.dat")
 
 
     '''
@@ -286,9 +287,10 @@ if __name__ == '__main__':
     File index should start from 98. But index from 98 is showing some wrong value at the 
     beginning of the graph. 
     '''
+    plotter = SubPlots()
+
     idxA = 98
     idxB = idxA + 4608 # 7680
-    plotter = SubPlots()
     barray = frdr.ficontent[idxA:idxA+4608]
     integers = unpack('>' + 'h' * (len(barray) // 2), barray) #Source is big Endian.
     plotter.addPlot(integers)
@@ -303,26 +305,29 @@ if __name__ == '__main__':
     integers2 = unpack('>' + 'h' * (len(barray) // 2), barray)
     plotter.addPlot(integers2)
 
-    '''
+
     # csv += "Trip2\n"
     # for i in integers:
     #     csv += str(i) + '\n'
     # csv += '\n,'
+
 
     idxA += 4608
     barray = frdr.ficontent[idxA:idxA + 4608]
     integers3 = unpack('>' + 'h' * (len(barray) // 2), barray)
     plotter.addPlot(integers3)
 
+
     # csv += "Close\n"
     # for i in integers:
     #     csv += str(i) + '\n'
     # csv += '\n,'
 
+    
     idxA += 4608
     barray = frdr.ficontent[idxA:idxA + 4608]
     integers4 = unpack('>' + 'h' * (len(barray) // 2), barray)
-    plotter.addPlot(integers4)
+    #plotter.addPlot(integers4)
 
     # csv += "PhaseA\n"
     # for i in integers:
@@ -332,7 +337,7 @@ if __name__ == '__main__':
     idxA += 4608
     barray = frdr.ficontent[idxA:idxA + 4608]
     integers5 = unpack('>' + 'h' * (len(barray) // 2), barray)
-    plotter.addPlot(integers5)
+    #plotter.addPlot(integers5)
 
     # csv += "PhaseB\n"
     # for i in integers:
@@ -342,14 +347,16 @@ if __name__ == '__main__':
     idxA += 4608
     barray = frdr.ficontent[idxA:idxA + 4608]
     integers6 = unpack('>' + 'h' * (len(barray) // 2), barray)
-    plotter.addPlot(integers6)
+    #plotter.addPlot(integers6)
 
     idxA += 4608
     barray = frdr.ficontent[idxA:idxA + 2304]
     print(len(barray))
     integers7 = unpack('>' + 'b' * (len(barray)), barray)
-    '''
-    #plotter.addPlot(integers6)
+    for bait in barray:
+        print(f'{bait:b}')
+    plotter.addPlot(integers7)
+
 
     # csv += "PhaseC\n"
     # for i in integers:

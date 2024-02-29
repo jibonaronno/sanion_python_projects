@@ -258,7 +258,8 @@ def ArraySwap16(arr):
 if __name__ == '__main__':
     frdr = BinaryFileReader()
     #frdr.readFil('D:\\ClientProc IEC61850\\61850_CFG\\LOG\\61850\\COMTRADE\\Sanion_154kV_GIS_D01_2A_192.168.10.104\\01_22_20230811153910.dat') #("01_22_20230706160141.dat")
-    frdr.readFil("C:\\Shared\\01_22_20230821140856.dat")
+    #frdr.readFil("C:\\Shared\\01_22_20230821140856.dat")
+    frdr.readFil("C:\\Shared\\01_22_20240115150748939.dat")
 
     frdr.getHeader()
 

@@ -19,7 +19,7 @@ class DASH(object):
         self.root = tk.Tk()
         self.root.title("DASH")
         self.root.state("zoomed")
-        self.side_frame = tk.Frame(self.root) #, yscrollcommand=scrollbar.set)
+        self.side_frame = tk.Frame(self.root)  #,yscrollcommand=scrollbar.set)
         self.side_frame.pack(side="left", fill="y")
         self.label = tk.Label(self.side_frame, text="Dashboard", bg="#4C2A85", fg="#FFF", font=25)
         self.label.pack(pady=50, padx=20)
@@ -63,11 +63,12 @@ class SRVR(object):
         self.subplot_lines = []
         self.dash = DASH(self)
         self.single_reg =  0x0000
+        self.contactAB_string = ""
         for _i in range(7):
             #xrr = np.array([1, 2, 3, 4, 5, 6])
             #yrr = np.array([1, 2, 3, 4, 5, 6])
             xrr = np.linspace(0, 1800, 8)
-            yrr = np.linspace(-4000, 5000, 8)
+            yrr = np.linspace(-4000, 18000, 8)
             self.subplots.append(plt.subplots())
             self.subplot_lines.append(self.subplots[_i][1].plot(xrr, yrr)[0])
         for plot in self.subplots:
@@ -209,7 +210,7 @@ class SRVR(object):
         self.voltwave.clear()
         return (0x00FF & reg)
     def readInitiateAndContact(self):
-        subplt = self.readRegisters(17428, 64, 18, "init_and_contact.csv", is_plot=False)
+        subplt = self.readRegisters(17428, 64, 18, "init_and_contact.csv", is_plot=True)
         #if subplt is not None:
             #self.subplots.append(subplt)
 
@@ -230,16 +231,17 @@ class SRVR(object):
             #self.subplots.append(subplt)
 
     def readPhaseCCurr(self):
-        #subplt = self.readRegisters(15124, 64, 36, "PhaseC_Curr.csv", is_plot=True, plot_index=4, is_twoscompl=True)
-        subplt = self.readRegisters(15124, 64, 36, "PhaseC_Curr.csv") #, is_plot=True, plot_index=4, is_twoscompl=True)
+        subplt = self.readRegisters(15124, 64, 36, "PhaseC_Curr.csv", is_plot=True, plot_index=4, is_twoscompl=True)
+        #subplt = self.readRegisters(15124, 64, 36, "PhaseC_Curr.csv") #, is_plot=True, plot_index=4, is_twoscompl=True)
 
     def readVoltWave(self):
-        subplt = self.readRegisters(8212, 64, 36, "voltwave.csv", is_plot=False, plot_index=5, is_twoscompl=True)
+        subplt = self.readRegisters(8212, 64, 36, "voltwave.csv", is_plot=True, plot_index=5, is_twoscompl=True)
         #if subplt is not None:
             #self.subplots.append(subplt)
 
     def readInitContact(self):
-        subplt = self.readRegisters(17428, 64, 18, "InitContact.csv", is_plot=True, plot_index=5, is_twoscompl=True)
+        pass
+        #subplt = self.readRegisters(17428, 64, 18, "InitContact.csv", is_plot=False, plot_index=5, is_twoscompl=True)
         #if subplt is not None:
             #self.subplots.append(subplt)
 
