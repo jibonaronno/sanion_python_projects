@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import tkinter as tk
 from tkinter import ttk
+
+import serial
 from serial.tools import list_ports
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
@@ -12,14 +14,24 @@ class DASH(object):
         self.root = tk.Tk()
         self.root.title("DASH")
         self.root.state("zoomed")
-        self.side_frame = tk.Frame(self.root)  #,yscrollcommand=scrollbar.set)
+        self.side_frame = tk.Frame(self.root, borderwidth=1, relief="groove")  #,yscrollcommand=scrollbar.set)
         self.side_frame.pack(side="left", fill="y")
+
+        self.frameX = tk.Frame(self.root, borderwidth=1, relief="groove")
+        self.frameX.pack(side="top")
+
         self.label = tk.Label(self.side_frame, text="Dashboard", bg="#4C2A85", fg="#FFF", font=25)
-        self.label.pack(pady=50, padx=20)
-        self.btnRead = tk.Button(self.side_frame, text="Read Again", command=self.readAgain)
-        self.btnRead.pack()
-        self.charts_frame = tk.Frame(self.root)
-        self.charts_frame.pack()
+        self.label.pack(side="top", pady=50, padx=20)
+
+        self.frameA = tk.Frame(self.side_frame, borderwidth=1, relief="groove")
+        self.frameA.pack() #  fill='y')
+
+        self.btnRead = tk.Button(self.frameA, text="Read Again", command=self.readAgain)
+        self.btnConnect = tk.Button(self.frameA, text="Connect", command=self.connect_port, state="disabled")
+        self.btnRead.pack(side="left")
+        self.btnConnect.pack(side="left")
+        self.charts_frame = tk.Frame(self.root, borderwidth=2, relief="raised")
+        self.charts_frame.pack(side="bottom")
         self.upper_frame = tk.Frame(self.charts_frame)
         self.upper_frame.pack(fill="both", expand=True)
         self.canvases = []
@@ -43,6 +55,22 @@ class DASH(object):
         if selected_index:
             selected_port = self.comportlisttree.get(selected_index)
             print("Selected Port : ", selected_port)
+            self.btnConnect.config(state="normal")
+
+    def connect_to_port(self):
+        selected_index = self.comportlisttree.curselection()
+        if selected_index:
+            selected_port = self.comportlisttree.get(selected_index)
+
+            try:
+                ser = serial.Serial(selected_port, 15200)
+                print("COM PORT Connected")
+
+            except serial.SerialException as e:
+                print("Error Serial Port Connection", e)
+
+    def connect_port(self):
+        pass
 
     def readAgain(self):
         pass
