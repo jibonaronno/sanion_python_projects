@@ -35,13 +35,20 @@ class SensorThread(threading.Thread):
                 print('Ex:0X07 : ' + str(e))
 
             while in_waiting == 0:
-                time.sleep(2.1)
+                time.sleep(0.01)
                 try:
+                    #  print("self.serialport.in_waiting")
                     in_waiting = self.serialport.in_waiting
+                    if self.stop_event.is_set():
+                        break
                 except Exception as e:
                     print('Ex:0x08 : ' + str(e))
+
+            time.sleep(0.01)
             try:
+                print("self.serialport.read(in_waiting)")
                 unit = self.serialport.read(in_waiting)
+                print("self.serialport.read(in_waiting)")
             except Exception as e:
                 print('Ex in sensor Thread readline() 52 : ' + str(e))
 
