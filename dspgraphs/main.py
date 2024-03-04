@@ -3,6 +3,10 @@
 #  DASH class self.comportlisttree is the list box of com ports at left
 #  DASH class self.check_variable_lf check box boolean variable for Line Feed
 
+#  Following [Creating Thread Object] section creates the serial data read / write threading
+#  class object self.sensor_thread . I want to send data from thread to TkInter GUI by event handler.
+#
+
 #  Check that serial reading thread is started in connect_to_port(self): function for now.
 #  or we can shift it to under the button btnStartCollect
 
@@ -128,9 +132,7 @@ class DASH(object):
                 print("COM PORT Connected")
 
                 #  Creating Thread Object
-                self.sensor_thread = SensorThread(ser)
-
-
+                self.sensor_thread = SensorThread(rootParent=self.root, serialPort=ser)
 
             except serial.SerialException as e:
                 print("Error Serial Port Connection", e)

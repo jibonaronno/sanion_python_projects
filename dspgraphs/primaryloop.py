@@ -18,7 +18,7 @@ import time
 #         ser.close()
 
 class SensorThread(threading.Thread):
-    def __init__(self, serialPort):
+    def __init__(self, rootParent, serialPort):
         self.serialport = serialPort
         self.stop_event = threading.Event()
         super().__init__()
@@ -46,9 +46,7 @@ class SensorThread(threading.Thread):
 
             time.sleep(0.01)
             try:
-                print("self.serialport.read(in_waiting)")
                 unit = self.serialport.read(in_waiting)
-                print("self.serialport.read(in_waiting)")
             except Exception as e:
                 print('Ex in sensor Thread readline() 52 : ' + str(e))
 
