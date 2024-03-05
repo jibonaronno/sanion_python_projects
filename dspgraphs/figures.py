@@ -23,12 +23,15 @@ class FIGS(object):
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
     def updatePlot(self, new_x:[], new_y:[]):
-        xarr = []
+        x = []
         if len(new_y) > 0:
             if len(new_x) != len(new_y):
                 xarr = np.linspace(1, len(new_y), len(new_y))
+                x = np.array(xarr)
+            else:
+                x = new_x
             self.plot.clear()
-            self.plot(new_x, new_y)
+            self.plot(x, new_y)
             for canvas in self.canvases:
                 canvas.draw()
 

@@ -5,7 +5,9 @@
 
 #  Following [Creating Thread Object] section creates the serial data read / write threading
 #  class object self.sensor_thread . I want to send data from thread to TkInter GUI by event handler.
-#
+#  It is required to call a specific TCL function to bind callback to receive user string data from
+#  the threading.Thread derived class. Solution came from
+#  https://stackoverflow.com/questions/41912004/how-to-use-tcl-tk-bind-function-on-tkinters-widgets-in-python
 
 #  Check that serial reading thread is started in connect_to_port(self): function for now.
 #  or we can shift it to under the button btnStartCollect
@@ -35,13 +37,13 @@ class DASH(object):
         self.root.title("DASH")
         self.root.state("zoomed")
         self.side_frame = tk.Frame(self.root, borderwidth=1, relief="groove")  #,yscrollcommand=scrollbar.set)
-        self.side_frame.pack(side="left", fill="y")
+        self.side_frame.pack(side="left") #  , fill="y")
 
         self.frameX = tk.Frame(self.root, borderwidth=1, relief="groove")
         self.frameX.pack(side="top")
 
         self.label = tk.Label(self.side_frame, text="Dashboard", bg="#4C2A85", fg="#FFF", font=25)
-        self.label.pack(side="top", pady=50, padx=20)
+        self.label.pack(side="top", pady=10, padx=5)
 
         self.frameA = tk.Frame(self.side_frame, borderwidth=1, relief="groove")
         self.frameA.pack() #  fill='y')
@@ -58,6 +60,9 @@ class DASH(object):
         self.upper_frame.pack(fill="both", expand=True)
         self.canvases = []
 
+        self.datalist = []
+        self.datalist.append([])
+
         self.comportlisttree = tk.Listbox(self.side_frame, width=50)
         self.comportlisttree.bind("<<ListboxSelect>>", self.on_select_list_item)
         self.comportlisttree.pack(padx=5, pady=5)
@@ -66,8 +71,8 @@ class DASH(object):
         self.text_for_tx = ""
 
         self.frameB = tk.Frame(self.side_frame, borderwidth=1, relief="groove")
-        self.frameB.pack(fill='y')  # fill='y')
-        self.textbox_tx = tk.Text(self.frameB, height=2) #  , width=40)
+        self.frameB.pack()  # fill='y')
+        self.textbox_tx = tk.Text(self.frameB, height=2, width=30) #  , width=40)
         self.textbox_tx.pack(side="left", padx=5, pady=5)
         self.check_variable_lf = tk.BooleanVar()
         self.checkbox_lf = tk.Checkbutton(self.frameB, text="LF", variable=self.check_variable_lf)
@@ -76,9 +81,18 @@ class DASH(object):
         #  self.redrawFigs()
 
         self.frameC = tk.Frame(self.side_frame, borderwidth=1, relief="groove")
-        self.frameC.pack(fill='y')
+        self.frameC.pack() #  fill='y')
         self.btnStartCollect = tk.Button(self.frameC, text="Start Collect", command=self.startCollect)
         self.btnStartCollect.pack(side=tk.LEFT)
+        self.btnSend = tk.Button(self.frameC, text="Send", command=self.sendSerial)
+        self.btnSend.pack(side=tk.LEFT)
+
+        self.frameD = tk.Frame(self.side_frame, borderwidth=1, relief="groove")
+        self.frameD.pack() #  fill='y')
+        self.serialdatalistbox = tk.Listbox(self.frameD, width=50)
+        self.serialdatalistbox.pack(padx=5, pady=5)
+
+        self.ser = None
 
         self.serial_port = ""
         self.sensor_thread = None # SensorThread()
@@ -86,18 +100,29 @@ class DASH(object):
 
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)  # Ensure clean exit
 
+    def sendSerial(self):
+        txt = self.textbox_tx.get("1.0", "end-1c")
+        print(txt)
+        if self.ser:
+            if self.ser.is_open:
+                self.ser.write(str(txt).encode("utf-8"))
+                self.datalist[0].clear()
+
+
     def startCollect(self):
         #  Starting Thread
         self.sensor_thread.start()
 
     def on_closing(self):
-        self.sensor_thread.stop()
-        self.sensor_thread.stop_event.set()
+        if self.sensor_thread:
+            self.sensor_thread.stop()
+            self.sensor_thread.stop_event.set()
         #self.sensor_thread.join()
         self.root.destroy()
 
     def redrawFigs(self):
         self.figs.addSampleCanvas(self.charts_frame)
+        #self.figs.updatePlot([1], self.datalist[0])
 
     def show(self):
         self.root.mainloop()
@@ -119,6 +144,14 @@ class DASH(object):
             print("Selected Port : ", selected_port)
             self.btnConnect.config(state="normal")
 
+    def onSerialDataReceived(self, event):
+        if event:
+            # data = event.__getattribute__("data")
+            # print(event.__dict__)
+            self.serialdatalistbox.insert(self.serialdatalistbox.size(), "%s" % event)
+            dta = "%s" % event
+            self.datalist[0].append(int(str(dta)))
+            #  self.serialdatalistbox.insert(self.serialdatalistbox.size(), "Event")
     def connect_to_port(self):
         selected_index = self.comportlisttree.curselection()
         #  print(selected_index) #  selected_index is a tuple like (0, )
@@ -130,9 +163,16 @@ class DASH(object):
                 #  timeout parameter in seconds for reading timeout. It is optional. If it is not given or
                 #  None, read operation will block the execution.
                 print("COM PORT Connected")
-
+                self.ser = ser
                 #  Creating Thread Object
                 self.sensor_thread = SensorThread(rootParent=self.root, serialPort=ser)
+                #  This function did not work : self.root.bind("<<DataAvailable>>", self.onSerialDataReceived)
+                #  I was trying to send the serial data from primaryloop.py file to the main.py root parents listbox.
+                #  You need to call TCL function to bind the callback to receive the data member which is %d .
+                #  Following solution came from
+                #  https://stackoverflow.com/questions/41912004/how-to-use-tcl-tk-bind-function-on-tkinters-widgets-in-python
+                cmd = self.root.register(self.onSerialDataReceived)
+                self.root.tk.call("bind", self.root, "<<DataAvailable>>", cmd + " %d")
 
             except serial.SerialException as e:
                 print("Error Serial Port Connection", e)
