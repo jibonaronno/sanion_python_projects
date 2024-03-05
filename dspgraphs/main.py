@@ -9,6 +9,12 @@
 #  the threading.Thread derived class. Solution came from
 #  https://stackoverflow.com/questions/41912004/how-to-use-tcl-tk-bind-function-on-tkinters-widgets-in-python
 
+#  SensorThread Class derived from threading.Thread written in primaryloop.py file.
+#  Class is written similar style like QtThread. But here we use pythons threading.Thread
+#  event_generate method of tk is used to send event with data to the main tk window from inside
+#  the thread. Serial data send event is called "DataAvailable" . Events are created with the
+#  same name from sender class to receiver. Here the receiver is the main window.
+
 #  Check that serial reading thread is started in connect_to_port(self): function for now.
 #  or we can shift it to under the button btnStartCollect
 
