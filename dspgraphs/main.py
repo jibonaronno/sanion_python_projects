@@ -60,6 +60,8 @@ class DASH(object):
         self.btnRead.pack(side="left")
         self.btnConnect.pack(side="left")
         self.btnRedraw.pack(side="left")
+        self.btnUpdate = tk.Button(self.frameA, text="Update", command=self.UpdateFigs)
+        self.btnUpdate.pack(side=tk.LEFT)
         self.charts_frame = tk.Frame(self.root, borderwidth=2, relief="raised")
         self.charts_frame.pack(side="top", fill='y', padx=5, pady=5)
         self.upper_frame = tk.Frame(self.charts_frame)
@@ -92,6 +94,8 @@ class DASH(object):
         self.btnStartCollect.pack(side=tk.LEFT)
         self.btnSend = tk.Button(self.frameC, text="Send", command=self.sendSerial)
         self.btnSend.pack(side=tk.LEFT)
+        self.btnClear = tk.Button(self.frameC, text="Clear", command=self.clearListbox)
+        self.btnClear.pack(side=tk.LEFT)
 
         self.frameD = tk.Frame(self.side_frame, borderwidth=1, relief="groove")
         self.frameD.pack() #  fill='y')
@@ -114,6 +118,8 @@ class DASH(object):
                 self.ser.write(str(txt).encode("utf-8"))
                 self.datalist[0].clear()
 
+    def clearListbox(self):
+        self.serialdatalistbox.delete(0, tk.END)
 
     def startCollect(self):
         #  Starting Thread
@@ -128,7 +134,9 @@ class DASH(object):
 
     def redrawFigs(self):
         self.figs.addSampleCanvas(self.charts_frame)
-        #self.figs.updatePlot([1], self.datalist[0])
+        self.figs.updatePlot([1], self.datalist[0])
+        #new_y = [5, 3, 1, 2, 4, 2, 6, 10, 1, 11, 12,9,8,7,6,10,11,12,13,14]
+        #self.figs.updatePlot([1], new_y)
 
     def show(self):
         self.root.mainloop()

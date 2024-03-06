@@ -1,3 +1,7 @@
+#  Because we are using TkInter gui for viewing plots so conventional document resources
+#  are not applicable sometimes. Our helper object is FigureCanvasTkAgg .
+#
+
 import matplotlib.pyplot as plt
 import numpy as np
 import tkinter as tk
@@ -9,7 +13,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 
 class FIGS(object):
     def __init__(self):
-        self.fig = Figure(figsize=(10, 2), dpi=50)
+        self.fig = Figure(figsize=(10, 2), dpi=80)
         self.plot = self.fig.add_subplot(1,1,1)
         self.canvases = []
 
@@ -29,15 +33,17 @@ class FIGS(object):
                 xarr = np.linspace(1, len(new_y), len(new_y))
                 x = np.array(xarr)
             else:
-                x = new_x
+                x = np.array(new_x)
+            y = np.array(new_y)
+            print(f"LEN x:{len(x)} LEN y:{len(y)}")
             self.plot.clear()
-            self.plot(x, new_y)
+            self.plot.plot(x, y)
             for canvas in self.canvases:
                 canvas.draw()
 
     def addSampleCanvas(self, frame):
-        new_x = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-        new_y = [5, 3, 1, 2, 4, 2, 6, 10, 1, 11]
+        new_x = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+        new_y = [5, 3, 1, 2, 4, 2, 6, 10, 1, 11, 11, 10, 9, 8]
         self.plot.clear()
         self.plot.plot(new_x, new_y)
         self.addCanvas(self.fig, frame)
