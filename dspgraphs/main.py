@@ -18,6 +18,9 @@
 #  Check that serial reading thread is started in connect_to_port(self): function for now.
 #  or we can shift it to under the button btnStartCollect
 
+#  Check that self.root.protocol("WM_DELETE_WINDOW", self.on_closing)  this command is used to call
+#  on_closing() function when the main windows is about to close.
+
 from pprint import pprint
 import matplotlib.pyplot as plt
 import numpy as np
@@ -99,8 +102,13 @@ class DASH(object):
 
         self.frameD = tk.Frame(self.side_frame, borderwidth=1, relief="groove")
         self.frameD.pack() #  fill='y')
-        self.serialdatalistbox = tk.Listbox(self.frameD, width=50)
+        self.serialdatalistbox = tk.Listbox(self.frameD, width=60)
         self.serialdatalistbox.pack(padx=5, pady=5)
+
+        self.frameE = tk.Frame(self.side_frame, borderwidth=1, relief="groove")
+        self.frameE.pack()  # fill='y')
+        self.textbox_rx = tk.Text(self.frameE, height=8, width=50)  # , width=40)
+        self.textbox_rx.pack(side="left", padx=5, pady=5)
 
         self.ser = None
 
@@ -112,10 +120,12 @@ class DASH(object):
 
     def sendSerial(self):
         txt = self.textbox_tx.get("1.0", "end-1c")
+        txt = txt + "\r"
         print(txt)
         if self.ser:
             if self.ser.is_open:
-                self.ser.write(str(txt).encode("utf-8"))
+                # self.ser.write(str(txt).encode("utf-8"))
+                self.ser.write(str(txt).encode("ascii"))
                 self.datalist[0].clear()
 
     def clearListbox(self):
@@ -137,6 +147,9 @@ class DASH(object):
         self.figs.updatePlot([1], self.datalist[0])
         #new_y = [5, 3, 1, 2, 4, 2, 6, 10, 1, 11, 12,9,8,7,6,10,11,12,13,14]
         #self.figs.updatePlot([1], new_y)
+
+    def UpdateFigs(self):
+        self.figs.updatePlot([1], self.datalist[0])
 
     def show(self):
         self.root.mainloop()
@@ -160,11 +173,17 @@ class DASH(object):
 
     def onSerialDataReceived(self, event):
         if event:
-            # data = event.__getattribute__("data")
-            # print(event.__dict__)
-            self.serialdatalistbox.insert(self.serialdatalistbox.size(), "%s" % event)
+            #  data = event.__getattribute__("data")
+            #  print(event.__dict__)
+            #  self.serialdatalistbox.insert(self.serialdatalistbox.size(), "%s" % event)
             dta = "%s" % event
-            self.datalist[0].append(int(str(dta)))
+            try:
+                if float(dta) < 0.9:
+                    self.datalist[0].append(float(str(dta)))
+                    self.serialdatalistbox.insert(self.serialdatalistbox.size(), float(str(dta)))
+            except:
+                pass
+            ####  self.textbox_rx.insert(tk.END, dta)
             #  self.serialdatalistbox.insert(self.serialdatalistbox.size(), "Event")
     def connect_to_port(self):
         selected_index = self.comportlisttree.curselection()
@@ -173,10 +192,11 @@ class DASH(object):
             selected_port = self.com_ports[selected_index[0]] #  self.comportlisttree.get(selected_index)
             self.serial_port = selected_port
             try:
-                ser = serial.Serial(selected_port, baudrate=15200, timeout=0)
+                ser = serial.Serial(selected_port, baudrate=115200, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=0)
+
                 #  timeout parameter in seconds for reading timeout. It is optional. If it is not given or
                 #  None, read operation will block the execution.
-                print("COM PORT Connected")
+                print(f"COM PORT Connected : {selected_port}")
                 self.ser = ser
                 #  Creating Thread Object
                 self.sensor_thread = SensorThread(rootParent=self.root, serialPort=ser)

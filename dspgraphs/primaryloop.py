@@ -27,7 +27,7 @@ class SensorThread(threading.Thread):
     def run(self):
         dripA = 0
         dripB = 0
-        in_waiting = ''
+        in_waiting = 0
         jMessage = ""
         unit = ''
         itm = ''
@@ -43,14 +43,14 @@ class SensorThread(threading.Thread):
                 # if dripB > 200:
                 #     dripB = 0
                 #     # self.root.event_generate("<<DataAvailable>>", when="tail", data="TEST DATA")
-                time.sleep(0.0006)
-                if dripA > 0:
-                    dripA = dripA + 1
-                    if dripA > 1:
-                        self.root.event_generate("<<DataAvailable>>", when="tail", data=itm)
-                        #  time.sleep(0.01)
-                        itm = ""
-                        dripA = 0
+                ###  time.sleep(0.0006)
+                # if dripA > 0:
+                #     dripA = dripA + 1
+                #     if dripA > 1:
+                #         self.root.event_generate("<<DataAvailable>>", when="tail", data=itm)
+                #         #  time.sleep(0.01)
+                #         itm = ""
+                #         dripA = 0
                 try:
                     #  print("self.serialport.in_waiting")
                     in_waiting = self.serialport.in_waiting
@@ -59,18 +59,28 @@ class SensorThread(threading.Thread):
                 except Exception as e:
                     print('Ex:0x08 : ' + str(e))
 
-            time.sleep(0.01)
+            #### time.sleep(0.01)
             try:
-                unit = self.serialport.read(in_waiting)
+                ##  time.sleep(0.001)
+                in_waiting = self.serialport.in_waiting
+                ####  unit = self.serialport.read(in_waiting)
                 dripA = 1
+                ## unit = self.serialport.readline().decode('utf-8').rstrip()
+                unit = self.serialport.readline().rstrip()
+                #### print(unit)
+                #### print(str(in_waiting))
+                ##self.serialport.flushInput()
             except Exception as e:
                 print('Ex in sensor Thread readline() 52 : ' + str(e))
 
             if len(unit) > 0:
                 try:
-                    itm += unit.decode('ascii')
-                except:
-                    pass
+                    ##  itm = unit.decode('Ascii')
+                    itm = unit.decode('utf-8')
+                    self.root.event_generate("<<DataAvailable>>", when="tail", data=itm)
+                except Exception as e:
+                    print(f"Error In unit.decode(ascii) {str(e)}")
+
         self.serialport.close()
         print("Stop Event Is Set")
     def stop(self):
