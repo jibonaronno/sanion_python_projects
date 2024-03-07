@@ -99,6 +99,10 @@ class DASH(object):
         self.btnSend.pack(side=tk.LEFT)
         self.btnClear = tk.Button(self.frameC, text="Clear", command=self.clearListbox)
         self.btnClear.pack(side=tk.LEFT)
+        self.btnRemove = tk.Button(self.frameC, text="Remove", command=self.removeFromList, state="disabled")
+        self.btnRemove.pack(side=tk.LEFT)
+        self.btnMakeTable = tk.Button(self.frameC, text="Make Table", command=self.start_data_table_timer, state="disabled")
+        self.btnMakeTable.pack(side=tk.LEFT)
 
         self.frameD = tk.Frame(self.side_frame, borderwidth=1, relief="groove")
         self.frameD.pack() #  fill='y')
@@ -108,9 +112,12 @@ class DASH(object):
         self.frameE = tk.Frame(self.side_frame, borderwidth=1, relief="groove")
         self.frameE.pack()  # fill='y')
         self.textbox_rx = tk.Text(self.frameE, height=8, width=50)  # , width=40)
-        self.textbox_rx.pack(side="left", padx=5, pady=5)
+        self.textbox_rx.pack(side="top", padx=5, pady=5)
 
         self.ser = None
+        self.Rtree = None
+
+        self.data_table_redraw_timer_id = None
 
         self.serial_port = ""
         self.sensor_thread = None # SensorThread()
@@ -134,6 +141,39 @@ class DASH(object):
     def startCollect(self):
         #  Starting Thread
         self.sensor_thread.start()
+
+    def reset_data_table_timer(self):
+        if self.data_table_redraw_timer_id:
+            self.root.after_cancel(self.data_table_redraw_timer_id)
+            self.start_data_table_timer()
+        else:
+            self.start_data_table_timer()
+
+    def start_data_table_timer(self):
+        # Start a timer for 5 seconds (5000 milliseconds)
+        self.data_table_redraw_timer_id = self.root.after(2000, self.data_table_timer_callback)
+
+    def data_table_timer_callback(self):
+        self.drawTreeTable(1, self.frameE, self.datalist)
+        print(f'Length .datalist {len(self.datalist)}')
+
+    def drawTreeTable(self, column_count, frame, dta: []):
+        if column_count > 0:
+            if self.Rtree:
+                self.Rtree.destroy()
+            columns = []
+            column_names = []
+            for idx in range(column_count):
+                columns.append('#' + str(idx+1))
+                column_names.append(str(idx+1))
+            self.Rtree = ttk.Treeview(frame, columns=columns, show='headings')
+            dtaa = []
+            for unt in dta:
+                dtaa.append((unt))
+            print(f"dta : {len(dta)} LENTH: {len(dtaa)}")
+            for row in dtaa:
+                self.Rtree.insert('', tk.END, values=row)
+            self.Rtree.pack()
 
     def on_closing(self):
         if self.sensor_thread:
@@ -171,6 +211,9 @@ class DASH(object):
             print("Selected Port : ", selected_port)
             self.btnConnect.config(state="normal")
 
+    def removeFromList(self):
+        pass
+
     def onSerialDataReceived(self, event):
         if event:
             #  data = event.__getattribute__("data")
@@ -178,9 +221,10 @@ class DASH(object):
             #  self.serialdatalistbox.insert(self.serialdatalistbox.size(), "%s" % event)
             dta = "%s" % event
             try:
-                if float(dta) < 0.9:
-                    self.datalist[0].append(float(str(dta)))
-                    self.serialdatalistbox.insert(self.serialdatalistbox.size(), float(str(dta)))
+                #if float(dta) < 0.9:
+                self.datalist[0].append(float(str(dta)))
+                self.serialdatalistbox.insert(self.serialdatalistbox.size(), float(str(dta)))
+                #  self.reset_data_table_timer()
             except:
                 pass
             ####  self.textbox_rx.insert(tk.END, dta)
