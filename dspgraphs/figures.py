@@ -12,7 +12,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 
 class FIGS(object):
     def __init__(self):
-        self.fig = Figure(figsize=(10, 2), dpi=80)
+        self.fig = Figure(figsize=(10, 2), dpi=90)
         self.plot = self.fig.add_subplot(1,1,1)
         self.canvases = []
 

@@ -74,7 +74,7 @@ class DASH(object):
         self.datalist = []
         self.datalist.append([])
 
-        self.comportlisttree = tk.Listbox(self.side_frame, width=50)
+        self.comportlisttree = tk.Listbox(self.side_frame, width=50, height=4)
         self.comportlisttree.bind("<<ListboxSelect>>", self.on_select_list_item)
         self.comportlisttree.pack(padx=5, pady=5)
         self.com_ports = []
@@ -94,28 +94,37 @@ class DASH(object):
         self.frameC = tk.Frame(self.side_frame, borderwidth=1, relief="groove")
         self.frameC.pack() #  fill='y')
         self.btnStartCollect = tk.Button(self.frameC, text="Start Collect", command=self.startCollect)
-        self.btnStartCollect.pack(side=tk.LEFT)
+        #  self.btnStartCollect.pack(side=tk.LEFT)
         self.btnSend = tk.Button(self.frameC, text="Send", command=self.sendSerial)
         self.btnSend.pack(side=tk.LEFT)
         self.btnClear = tk.Button(self.frameC, text="Clear", command=self.clearListbox)
         self.btnClear.pack(side=tk.LEFT)
         self.btnRemove = tk.Button(self.frameC, text="Remove", command=self.removeFromList, state="disabled")
         self.btnRemove.pack(side=tk.LEFT)
-        self.btnMakeTable = tk.Button(self.frameC, text="Make Table", command=self.start_data_table_timer, state="disabled")
+        self.btnMakeTable = tk.Button(self.frameC, text="Make Table", command=self.start_data_table_timer) # , state="disabled")
         self.btnMakeTable.pack(side=tk.LEFT)
 
         self.frameD = tk.Frame(self.side_frame, borderwidth=1, relief="groove")
         self.frameD.pack() #  fill='y')
-        self.serialdatalistbox = tk.Listbox(self.frameD, width=60)
+        self.serialdatalistbox = tk.Listbox(self.frameD, width=50)
         self.serialdatalistbox.pack(padx=5, pady=5)
 
         self.frameE = tk.Frame(self.side_frame, borderwidth=1, relief="groove")
         self.frameE.pack()  # fill='y')
-        self.textbox_rx = tk.Text(self.frameE, height=8, width=50)  # , width=40)
+        self.textbox_rx = tk.Text(self.frameE, height=8, width=42)  # , width=40)
+
+        self.textbox_rx_scrollbar = ttk.Scrollbar(self.frameE, orient=tk.VERTICAL, command=self.textbox_rx.yview)
+        self.textbox_rx.configure(yscroll=self.textbox_rx_scrollbar.set)
+        self.textbox_rx_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         self.textbox_rx.pack(side="top", padx=5, pady=5)
+
+        self.frameF = tk.Frame(self.side_frame, borderwidth=1, relief="groove")
+        self.frameF.pack()  # fill='y')
+
 
         self.ser = None
         self.Rtree = None
+        self.RtreeScrollbar = None
 
         self.data_table_redraw_timer_id = None
 
@@ -151,28 +160,35 @@ class DASH(object):
 
     def start_data_table_timer(self):
         # Start a timer for 5 seconds (5000 milliseconds)
-        self.data_table_redraw_timer_id = self.root.after(2000, self.data_table_timer_callback)
+        self.data_table_redraw_timer_id = self.root.after(500, self.data_table_timer_callback)
 
     def data_table_timer_callback(self):
-        self.drawTreeTable(1, self.frameE, self.datalist)
-        print(f'Length .datalist {len(self.datalist)}')
+        self.drawTreeTable(1, self.frameF, self.datalist[0])
+        print(f'Length .datalist {len(self.datalist[0])}')
 
     def drawTreeTable(self, column_count, frame, dta: []):
         if column_count > 0:
             if self.Rtree:
                 self.Rtree.destroy()
+            if self.RtreeScrollbar:
+                self.RtreeScrollbar.destroy()
             columns = []
             column_names = []
             for idx in range(column_count):
                 columns.append('#' + str(idx+1))
-                column_names.append(str(idx+1))
+                column_names.append("COL:" + str(idx+1))
             self.Rtree = ttk.Treeview(frame, columns=columns, show='headings')
+            for col, name in zip(columns, column_names):
+                self.Rtree.heading(col, text=name)
             dtaa = []
             for unt in dta:
                 dtaa.append((unt))
             print(f"dta : {len(dta)} LENTH: {len(dtaa)}")
             for row in dtaa:
                 self.Rtree.insert('', tk.END, values=row)
+            self.RtreeScrollbar = ttk.Scrollbar(frame, orient=tk.VERTICAL, command=self.Rtree.yview)
+            self.Rtree.configure(yscroll=self.RtreeScrollbar.set)
+            self.RtreeScrollbar.pack(side=tk.RIGHT, fill=tk.Y)
             self.Rtree.pack()
 
     def on_closing(self):
@@ -221,13 +237,17 @@ class DASH(object):
             #  self.serialdatalistbox.insert(self.serialdatalistbox.size(), "%s" % event)
             dta = "%s" % event
             try:
-                #if float(dta) < 0.9:
-                self.datalist[0].append(float(str(dta)))
-                self.serialdatalistbox.insert(self.serialdatalistbox.size(), float(str(dta)))
-                #  self.reset_data_table_timer()
+                if float(dta) < 10:
+                    self.datalist[0].append(float(str(dta)))
+                #  This Listbox is hidden and not used for now. I am concentrating to Treeview GUI for table
+                #  view for multiple columns.
+                #  self.serialdatalistbox.insert(self.serialdatalistbox.size(), float(str(dta)))
+                self.reset_data_table_timer()
             except:
                 pass
-            ####  self.textbox_rx.insert(tk.END, dta)
+            txt = dta.replace('\r', '\n')
+            self.textbox_rx.insert(tk.END, txt)
+            print(dta)
             #  self.serialdatalistbox.insert(self.serialdatalistbox.size(), "Event")
     def connect_to_port(self):
         selected_index = self.comportlisttree.curselection()
@@ -251,6 +271,8 @@ class DASH(object):
                 #  https://stackoverflow.com/questions/41912004/how-to-use-tcl-tk-bind-function-on-tkinters-widgets-in-python
                 cmd = self.root.register(self.onSerialDataReceived)
                 self.root.tk.call("bind", self.root, "<<DataAvailable>>", cmd + " %d")
+
+                self.startCollect() # Just start the thread ( self.sensor_thread.start() )
 
             except serial.SerialException as e:
                 print("Error Serial Port Connection", e)
