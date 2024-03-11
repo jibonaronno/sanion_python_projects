@@ -63,10 +63,10 @@ class SensorThread(threading.Thread):
             try:
                 ##  time.sleep(0.001)
                 in_waiting = self.serialport.in_waiting
-                ####  unit = self.serialport.read(in_waiting)
+                unit = self.serialport.read(1)
                 dripA = 1
                 ## unit = self.serialport.readline().decode('utf-8').rstrip()
-                unit = self.serialport.readline().rstrip()
+                ###  unit = self.serialport.readline() #  .rstrip()
                 #### print(unit)
                 #### print(str(in_waiting))
                 ##self.serialport.flushInput()
@@ -76,8 +76,12 @@ class SensorThread(threading.Thread):
             if len(unit) > 0:
                 try:
                     ##  itm = unit.decode('Ascii')
-                    itm = unit.decode('utf-8')
-                    self.root.event_generate("<<DataAvailable>>", when="tail", data=itm)
+                    if unit != b'\n':
+                        itm = itm + unit.decode('utf-8')
+                    else:
+                        itm = itm + unit.decode('utf-8')
+                        self.root.event_generate("<<DataAvailable>>", when="tail", data=itm)
+                        itm = ''
                 except Exception as e:
                     print(f"Error In unit.decode(ascii) {str(e)}")
 

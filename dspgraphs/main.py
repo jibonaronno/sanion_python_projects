@@ -131,6 +131,7 @@ class DASH(object):
         self.serial_port = ""
         self.sensor_thread = None # SensorThread()
         self.serial_queue = queue.Queue()
+        self.serdata = ""
 
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)  # Ensure clean exit
 
@@ -239,6 +240,12 @@ class DASH(object):
             try:
                 if float(dta) < 10:
                     self.datalist[0].append(float(str(dta)))
+                # if '\n' not in self.serdata:
+                #     self.serdata += dta
+                #     print(self.serdata)
+                # else:
+                #     self.datalist[0].append(float(str(self.serdata)))
+                #     self.serdata = ''
                 #  This Listbox is hidden and not used for now. I am concentrating to Treeview GUI for table
                 #  view for multiple columns.
                 #  self.serialdatalistbox.insert(self.serialdatalistbox.size(), float(str(dta)))
@@ -247,7 +254,7 @@ class DASH(object):
                 pass
             txt = dta.replace('\r', '\n')
             self.textbox_rx.insert(tk.END, txt)
-            print(dta)
+            ###  print(dta)
             #  self.serialdatalistbox.insert(self.serialdatalistbox.size(), "Event")
     def connect_to_port(self):
         selected_index = self.comportlisttree.curselection()
