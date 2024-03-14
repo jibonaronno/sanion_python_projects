@@ -137,7 +137,8 @@ class DASH(object):
 
     def sendSerial(self):
         txt = self.textbox_tx.get("1.0", "end-1c")
-        txt = txt + "\r"
+        if self.check_variable_lf:
+            txt = txt + "\r"
         print(txt)
         if self.ser:
             if self.ser.is_open:
@@ -147,6 +148,10 @@ class DASH(object):
 
     def clearListbox(self):
         self.serialdatalistbox.delete(0, tk.END)
+        self.datalist[0].clear()
+        if self.Rtree:
+            for chld in self.Rtree.get_children():
+                self.Rtree.delete(chld)
 
     def startCollect(self):
         #  Starting Thread
@@ -231,6 +236,22 @@ class DASH(object):
     def removeFromList(self):
         pass
 
+    def getNumbersListFromCommaSeparatedString(self, dta:str):
+        lst = None
+        if ',' in dta:
+            lst = dta.split(',')
+            print(f"lst size : {len(lst)}")
+            for ele in lst:
+                if ele.isnumeric():
+                    print(ele)
+                    pass
+                else:
+                    return [dta]
+
+            return lst
+        else:
+            return [dta]
+
     def onSerialDataReceived(self, event):
         if event:
             #  data = event.__getattribute__("data")
@@ -238,8 +259,17 @@ class DASH(object):
             #  self.serialdatalistbox.insert(self.serialdatalistbox.size(), "%s" % event)
             dta = "%s" % event
             try:
-                if float(dta) < 10:
-                    self.datalist[0].append(float(str(dta)))
+                lst = self.getNumbersListFromCommaSeparatedString(dta)
+                lstsize = len(lst)
+                print(f"csv size :{dta} : {str(lstsize)}")
+
+                if len(self.datalist) == 0:
+                    for idx in range(lstsize):
+                        self.datalist.append([])
+
+                ####  if float(dta) < 10:
+                for idx in range(lstsize):
+                    self.datalist[idx].append(float(str(lst[idx])))
                 # if '\n' not in self.serdata:
                 #     self.serdata += dta
                 #     print(self.serdata)
