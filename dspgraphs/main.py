@@ -72,7 +72,8 @@ class DASH(object):
         self.canvases = []
 
         self.datalist = []
-        self.datalist.append([])
+        self.datalistforgraph = []
+        #  self.datalist.append([])
 
         self.comportlisttree = tk.Listbox(self.side_frame, width=50, height=4)
         self.comportlisttree.bind("<<ListboxSelect>>", self.on_select_list_item)
@@ -137,18 +138,20 @@ class DASH(object):
 
     def sendSerial(self):
         txt = self.textbox_tx.get("1.0", "end-1c")
-        if self.check_variable_lf:
+        if self.check_variable_lf.get():
             txt = txt + "\r"
+            print("Checked")
         print(txt)
         if self.ser:
             if self.ser.is_open:
                 # self.ser.write(str(txt).encode("utf-8"))
                 self.ser.write(str(txt).encode("ascii"))
-                self.datalist[0].clear()
+                self.datalist.clear()
 
     def clearListbox(self):
         self.serialdatalistbox.delete(0, tk.END)
-        self.datalist[0].clear()
+        self.datalist.clear()
+        self.datalistforgraph.clear()
         if self.Rtree:
             for chld in self.Rtree.get_children():
                 self.Rtree.delete(chld)
@@ -169,8 +172,9 @@ class DASH(object):
         self.data_table_redraw_timer_id = self.root.after(500, self.data_table_timer_callback)
 
     def data_table_timer_callback(self):
-        self.drawTreeTable(1, self.frameF, self.datalist[0])
-        print(f'Length .datalist {len(self.datalist[0])}')
+        self.drawTreeTable(len(self.datalist[0]), self.frameF, self.datalist)
+        #  self.drawTreeTable(2, self.frameF, self.datalist)
+        print(f'Length .datalist {len(self.datalist[0])} , {self.datalist[0]}')
 
     def drawTreeTable(self, column_count, frame, dta: []):
         if column_count > 0:
@@ -180,6 +184,7 @@ class DASH(object):
                 self.RtreeScrollbar.destroy()
             columns = []
             column_names = []
+            print(str(column_count))
             for idx in range(column_count):
                 columns.append('#' + str(idx+1))
                 column_names.append("COL:" + str(idx+1))
@@ -187,8 +192,17 @@ class DASH(object):
             for col, name in zip(columns, column_names):
                 self.Rtree.heading(col, text=name)
             dtaa = []
+
+            for idx in range(len(dta[0])):
+                self.datalistforgraph.append([])
+
             for unt in dta:
-                dtaa.append((unt))
+                dtaa.append(unt)
+                idxx = 0
+                for ele in unt:
+                    self.datalistforgraph[idxx].append(ele)
+                    idxx = idxx + 1
+
             print(f"dta : {len(dta)} LENTH: {len(dtaa)}")
             for row in dtaa:
                 self.Rtree.insert('', tk.END, values=row)
@@ -206,12 +220,19 @@ class DASH(object):
 
     def redrawFigs(self):
         self.figs.addSampleCanvas(self.charts_frame)
-        self.figs.updatePlot([1], self.datalist[0])
+        self.figs.plot.clear()
+        #self.figs.updatePlot([1], self.datalist[0])
+        for datalist in self.datalistforgraph:
+            self.figs.updatePlot([1], datalist)
+
         #new_y = [5, 3, 1, 2, 4, 2, 6, 10, 1, 11, 12,9,8,7,6,10,11,12,13,14]
         #self.figs.updatePlot([1], new_y)
 
     def UpdateFigs(self):
-        self.figs.updatePlot([1], self.datalist[0])
+        self.figs.plot.clear()
+        for datalist in self.datalistforgraph:
+            self.figs.updatePlot([1], datalist)
+        ##self.figs.updatePlot([1], self.datalist[0])
 
     def show(self):
         self.root.mainloop()
@@ -240,10 +261,9 @@ class DASH(object):
         lst = None
         if ',' in dta:
             lst = dta.split(',')
-            print(f"lst size : {len(lst)}")
             for ele in lst:
-                if ele.isnumeric():
-                    print(ele)
+                ele = ele.rstrip()
+                if ele.isdigit():
                     pass
                 else:
                     return [dta]
@@ -257,19 +277,21 @@ class DASH(object):
             #  data = event.__getattribute__("data")
             #  print(event.__dict__)
             #  self.serialdatalistbox.insert(self.serialdatalistbox.size(), "%s" % event)
+            temp_list = []
             dta = "%s" % event
             try:
                 lst = self.getNumbersListFromCommaSeparatedString(dta)
                 lstsize = len(lst)
-                print(f"csv size :{dta} : {str(lstsize)}")
+                #  print(f"csv size :{dta} : {str(lstsize)}")
 
-                if len(self.datalist) == 0:
-                    for idx in range(lstsize):
-                        self.datalist.append([])
-
+                temp_list.clear()
                 ####  if float(dta) < 10:
                 for idx in range(lstsize):
-                    self.datalist[idx].append(float(str(lst[idx])))
+                    temp_list.append(float(str(lst[idx])))
+                    #  self.datalist[idx].append(float(str(lst[idx])))
+                    #  print(str(idx))
+                    #  print(str(self.datalist[-1]))
+                self.datalist.append(temp_list)
                 # if '\n' not in self.serdata:
                 #     self.serdata += dta
                 #     print(self.serdata)
@@ -280,8 +302,8 @@ class DASH(object):
                 #  view for multiple columns.
                 #  self.serialdatalistbox.insert(self.serialdatalistbox.size(), float(str(dta)))
                 self.reset_data_table_timer()
-            except:
-                pass
+            except Exception as e:
+                print(f"ERR::{str(e)}")
             txt = dta.replace('\r', '\n')
             self.textbox_rx.insert(tk.END, txt)
             ###  print(dta)
