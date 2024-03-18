@@ -44,7 +44,8 @@ class DASH(object):
         #  self.parent = _parent
         self.root = tk.Tk()
         self.root.title("DASH")
-        self.root.state("zoomed")
+        #  self.root.state("zoomed")
+        self.root.geometry('940x800')
         self.side_frame = tk.Frame(self.root, borderwidth=1, relief="groove")  #,yscrollcommand=scrollbar.set)
         self.side_frame.pack(side="left") #  , fill="y")
 
