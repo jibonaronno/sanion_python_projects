@@ -29,13 +29,13 @@ from tkinter import ttk
 
 import serial
 from serial.tools import list_ports
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from figures import FIGS
 from primaryloop import SensorThread
 from threading import Thread, Event
 import queue
 import time
+#  from matplotlib.figure import Figure
+#  from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 
 
