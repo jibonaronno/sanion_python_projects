@@ -30,6 +30,7 @@ from tkinter import ttk
 import serial
 from serial.tools import list_ports
 from figures import FIGS
+from polarblock import POLARBLOCK
 from primaryloop import SensorThread
 from threading import Thread, Event
 import queue
@@ -58,10 +59,10 @@ class DASH(object):
         self.frameA = tk.Frame(self.side_frame, borderwidth=1, relief="groove")
         self.frameA.pack() #  fill='y')
 
-        self.btnRead = tk.Button(self.frameA, text="Read Again", command=self.readAgain)
+
         self.btnConnect = tk.Button(self.frameA, text="Connect", command=self.connect_to_port, state="disabled")
         self.btnRedraw = tk.Button(self.frameA, text="Redraw", command=self.redrawFigs)
-        self.btnRead.pack(side="left")
+
         self.btnConnect.pack(side="left")
         self.btnRedraw.pack(side="left")
         self.btnUpdate = tk.Button(self.frameA, text="Update", command=self.UpdateFigs)
@@ -91,6 +92,7 @@ class DASH(object):
         self.checkbox_lf = tk.Checkbutton(self.frameB, text="LF", variable=self.check_variable_lf)
         self.checkbox_lf.pack(side="bottom")
         self.figs = FIGS()
+        self.polarplot = POLARBLOCK()
         #  self.redrawFigs()
 
         self.frameC = tk.Frame(self.side_frame, borderwidth=1, relief="groove")
@@ -192,6 +194,8 @@ class DASH(object):
             self.Rtree = ttk.Treeview(frame, columns=columns, show='headings')
             for col, name in zip(columns, column_names):
                 self.Rtree.heading(col, text=name)
+            for idx in range(column_count):
+                self.Rtree.column(f'#{str(idx+1)}', width=70)
             dtaa = []
 
             for idx in range(len(dta[0])):
@@ -222,12 +226,17 @@ class DASH(object):
     def redrawFigs(self):
         self.figs.addSampleCanvas(self.charts_frame)
         self.figs.plot.clear()
+        self.polarplot.addSampleCanvas(self.charts_frame)
         #self.figs.updatePlot([1], self.datalist[0])
         for datalist in self.datalistforgraph:
             self.figs.updatePlot([1], datalist)
 
         #new_y = [5, 3, 1, 2, 4, 2, 6, 10, 1, 11, 12,9,8,7,6,10,11,12,13,14]
         #self.figs.updatePlot([1], new_y)
+
+    def updatePolars(self):
+
+        pass
 
     def UpdateFigs(self):
         self.figs.plot.clear()
@@ -339,9 +348,6 @@ class DASH(object):
 
     #  Write a command to the COM port (example: sending 'Hello')
     #  ser.write(b'Hello\n')  # The device connected to the COM port needs to understand this command
-
-    def readAgain(self):
-        pass
 
 
 # Press the green button in the gutter to run the script.

@@ -76,7 +76,9 @@ class SensorThread(threading.Thread):
             if len(unit) > 0:
                 try:
                     ##  itm = unit.decode('Ascii')
-                    if unit != b'\n':
+                    if unit == b'\r':
+                        pass
+                    elif unit != b'\n':
                         itm = itm + unit.decode('utf-8')
                     else:
                         itm = itm + unit.decode('utf-8')
