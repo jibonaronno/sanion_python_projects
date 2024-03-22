@@ -62,9 +62,11 @@ class DASH(object):
 
         self.btnConnect = tk.Button(self.frameA, text="Connect", command=self.connect_to_port, state="disabled")
         self.btnRedraw = tk.Button(self.frameA, text="Redraw", command=self.redrawFigs)
+        self.btnRedrawPolar = tk.Button(self.frameA, text="Draw Polar", command=self.redrawPolarFigs)
 
         self.btnConnect.pack(side="left")
         self.btnRedraw.pack(side="left")
+        self.btnRedrawPolar.pack(side="left")
         self.btnUpdate = tk.Button(self.frameA, text="Update", command=self.UpdateFigs)
         self.btnUpdate.pack(side=tk.LEFT)
         self.charts_frame = tk.Frame(self.root, borderwidth=2, relief="raised")
@@ -234,9 +236,9 @@ class DASH(object):
         #new_y = [5, 3, 1, 2, 4, 2, 6, 10, 1, 11, 12,9,8,7,6,10,11,12,13,14]
         #self.figs.updatePlot([1], new_y)
 
-    def updatePolars(self):
-
-        pass
+    def redrawPolarFigs(self):
+        self.polarplot.addSampleCanvas(self.charts_frame)
+        self.polarplot.axis1.clear()
 
     def UpdateFigs(self):
         self.figs.plot.clear()
@@ -267,13 +269,20 @@ class DASH(object):
     def removeFromList(self):
         pass
 
+    def isFloat(self, digits:str):
+        if digits.replace(".", "").isdigit():
+            return True
+        else:
+            return False
+
     def getNumbersListFromCommaSeparatedString(self, dta:str):
         lst = None
         if ',' in dta:
             lst = dta.split(',')
             for ele in lst:
                 ele = ele.rstrip()
-                if ele.isdigit():
+                # if ele.isdigit():
+                if self.isFloat(ele):
                     pass
                 else:
                     return [dta]
