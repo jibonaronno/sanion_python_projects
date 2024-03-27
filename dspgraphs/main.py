@@ -112,8 +112,8 @@ class DASH(object):
 
         self.frameD = tk.Frame(self.side_frame, borderwidth=1, relief="groove")
         self.frameD.pack() #  fill='y')
-        self.serialdatalistbox = tk.Listbox(self.frameD, width=50)
-        self.serialdatalistbox.pack(padx=5, pady=5)
+        #  self.serialdatalistbox = tk.Listbox(self.frameD, width=50)
+        #  self.serialdatalistbox.pack(padx=5, pady=5)
 
         self.frameE = tk.Frame(self.side_frame, borderwidth=1, relief="groove")
         self.frameE.pack()  # fill='y')
@@ -154,7 +154,7 @@ class DASH(object):
                 self.datalist.clear()
 
     def clearListbox(self):
-        self.serialdatalistbox.delete(0, tk.END)
+        #  self.serialdatalistbox.delete(0, tk.END)
         self.datalist.clear()
         self.datalistforgraph.clear()
         if self.Rtree:
