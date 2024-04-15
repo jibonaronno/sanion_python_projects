@@ -23,6 +23,7 @@
 
 from pprint import pprint
 import matplotlib.pyplot as plt
+from Bezier import Bezier
 import numpy as np
 import tkinter as tk
 from tkinter import ttk
@@ -59,14 +60,13 @@ class DASH(object):
         self.frameA = tk.Frame(self.side_frame, borderwidth=1, relief="groove")
         self.frameA.pack() #  fill='y')
 
-
         self.btnConnect = tk.Button(self.frameA, text="Connect", command=self.connect_to_port, state="disabled")
         self.btnRedraw = tk.Button(self.frameA, text="Redraw", command=self.redrawFigs)
-        self.btnRedrawPolar = tk.Button(self.frameA, text="Draw Polar", command=self.redrawPolarFigs)
+        #  Disabled Polar Graph self.btnRedrawPolar = tk.Button(self.frameA, text="Draw Polar", command=self.redrawPolarFigs)
 
         self.btnConnect.pack(side="left")
         self.btnRedraw.pack(side="left")
-        self.btnRedrawPolar.pack(side="left")
+        #  Disabled Polar Graph self.btnRedrawPolar.pack(side="left")
         self.btnUpdate = tk.Button(self.frameA, text="Update", command=self.UpdateFigs)
         self.btnUpdate.pack(side=tk.LEFT)
         self.charts_frame = tk.Frame(self.root, borderwidth=2, relief="raised")
@@ -78,6 +78,14 @@ class DASH(object):
         self.datalist = []
         self.datalistforgraph = []
         #  self.datalist.append([])
+        self.bzr_control_points = np.array([[0, 0], [0, 80], [3, 80], [3, 0], [5.5, 0], [6.5, 0], [7.5, 0], [8.5, 70], [10, 70], [11, 0]])
+        self.bzr_total_array = np.arange(0, 1, 0.01)
+        self.curve1 = Bezier.Curve(self.bzr_total_array, self.bzr_control_points)
+
+        self.bzr_control_points2 = np.array([[11, 0], [11, 80], [14, 80], [14, 0], [16.5, 0], [17.5, 0], [18.5, 0], [19.5, 70], [21, 70], [22, 0]])
+        #  self.bzr_total_array = np.arange(0, 1, 0.01)
+        self.curve2 = Bezier.Curve(self.bzr_total_array, self.bzr_control_points2)
+
 
         self.comportlisttree = tk.Listbox(self.side_frame, width=50, height=4)
         self.comportlisttree.bind("<<ListboxSelect>>", self.on_select_list_item)
@@ -173,7 +181,7 @@ class DASH(object):
             self.start_data_table_timer()
 
     def start_data_table_timer(self):
-        # Start a timer for 5 seconds (5000 milliseconds)
+        # Start a timer for 0.5 seconds (500 milliseconds)
         self.data_table_redraw_timer_id = self.root.after(500, self.data_table_timer_callback)
 
     def data_table_timer_callback(self):
@@ -227,18 +235,29 @@ class DASH(object):
 
     def redrawFigs(self):
         self.figs.addSampleCanvas(self.charts_frame)
+        #  Temporary Comment To Show A Sample Graph self.figs.plot.clear()
         self.figs.plot.clear()
+        ''' Following function has been commented out to disable polarplot here. 
         self.polarplot.addSampleCanvas(self.charts_frame)
-        #self.figs.updatePlot([1], self.datalist[0])
-        for datalist in self.datalistforgraph:
-            self.figs.updatePlot([1], datalist)
+        '''
+        self.datalist.append((self.curve1[:, 0], self.curve1[:, 1], ""))
+        self.datalist.append((self.bzr_control_points[:, 0], self.bzr_control_points[:, 1], "ro:"))
+        self.datalist.append((self.curve2[:, 0], self.curve2[:, 1], ""))
+        self.datalist.append((self.bzr_control_points2[:, 0], self.bzr_control_points2[:, 1], "ro:"))
+        #  self.figs.updatePlot([1], self.datalist[0])
+        # for datalist in self.datalistforgraph:
+        #     self.figs.updatePlot(datalist[0], datalist[1])
+        for datalist in self.datalist:
+            self.figs.updatePlot(datalist[0], datalist[1], datalist[2])
 
         #new_y = [5, 3, 1, 2, 4, 2, 6, 10, 1, 11, 12,9,8,7,6,10,11,12,13,14]
         #self.figs.updatePlot([1], new_y)
 
-    def redrawPolarFigs(self):
+    # We Do not need this polar graph here
+    ''' def redrawPolarFigs(self):
         self.polarplot.addSampleCanvas(self.charts_frame)
         self.polarplot.axis1.clear()
+    '''
 
     def UpdateFigs(self):
         self.figs.plot.clear()
