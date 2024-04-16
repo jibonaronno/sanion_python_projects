@@ -20,6 +20,10 @@
 
 #  Check that self.root.protocol("WM_DELETE_WINDOW", self.on_closing)  this command is used to call
 #  on_closing() function when the main windows is about to close.
+# Check this read for canvas related all the methods and properties.
+# https://tkinter-docs.readthedocs.io/en/latest/widgets/canvas.html
+# Here is a canvas example https://python4kids.wordpress.com/2012/09/19/quadratic-bezier-curves/
+#
 
 from pprint import pprint
 import matplotlib.pyplot as plt
@@ -38,8 +42,6 @@ import queue
 import time
 #  from matplotlib.figure import Figure
 #  from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-
-
 
 class DASH(object):
     def __init__(self):
