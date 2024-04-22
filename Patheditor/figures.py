@@ -1,6 +1,7 @@
 #  Because we are using TkInter gui for viewing plots so conventional document resources
 #  are not applicable sometimes. Our helper object is FigureCanvasTkAgg .
 #
+import pprint
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -47,3 +48,4 @@ class FIGS(object):
         self.axis.clear()
         self.axis.plot(new_x, new_y)
         self.addCanvas(self.fig, frame)
+        #  pprint.pprint(self.axis.get_paths())

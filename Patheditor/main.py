@@ -31,7 +31,8 @@ from Bezier import Bezier
 import numpy as np
 import tkinter as tk
 from tkinter import ttk
-
+from scipy.ndimage import gaussian_filter1d
+from scipy.interpolate import make_interp_spline, BSpline
 import serial
 from serial.tools import list_ports
 from figures import FIGS
@@ -63,7 +64,8 @@ class DASH(object):
         self.frameA.pack() #  fill='y')
 
         self.btnConnect = tk.Button(self.frameA, text="Connect", command=self.connect_to_port, state="disabled")
-        self.btnRedraw = tk.Button(self.frameA, text="Redraw", command=self.redrawFigs)
+        # self.btnRedraw = tk.Button(self.frameA, text="Redraw", command=self.redrawFigs)
+        self.btnRedraw = tk.Button(self.frameA, text="Redraw", command=self.redrawFigsSPline)
         #  Disabled Polar Graph self.btnRedrawPolar = tk.Button(self.frameA, text="Draw Polar", command=self.redrawPolarFigs)
 
         self.btnConnect.pack(side="left")
@@ -80,8 +82,8 @@ class DASH(object):
         self.datalist = []
         self.datalistforgraph = []
         #  self.datalist.append([])
-        self.bzr_control_points = np.array([[0, 0], [0, 80], [3, 80], [3, 0], [5.5, 0], [6.5, 0], [7.5, 0], [8.5, 70], [10, 70], [11, 60], [12, 50], [13, 30], [14, 10]])
-        self.bzr_total_array = np.arange(0, 1, 0.01)
+        self.bzr_control_points = np.array([[0, 0], [2, 40], [4, 20], [5.5, 0], [6.5, 0], [7.5, 0], [8.5, 10], [10, 30], [11, 20], [12, 10], [13, 5], [14, 2]])
+        self.bzr_total_array = np.arange(0, 14, 0.14)
         self.curve1 = Bezier.Curve(self.bzr_total_array, self.bzr_control_points)
 
 
@@ -243,6 +245,23 @@ class DASH(object):
         #     self.figs.updatePlot(datalist[0], datalist[1])
         for datalist in self.datalist:
             self.figs.updatePlot(datalist[0], datalist[1], datalist[2])
+
+    def redrawFigsSPline(self):
+        self.figs.addSampleCanvas(self.charts_frame)
+        #  Temporary Comment To Show A Sample Graph self.figs.axis.clear()
+        self.figs.axis.clear()
+        #  spl = make_interp_spline(self.curve1[:, 0], self.curve1[:, 1])
+        # Error spl = make_interp_spline(self.bzr_control_points[:, 0], self.bzr_control_points[:, 1])
+        param = np.linspace(0, 1, self.bzr_control_points[:, 0].size)
+        spl = make_interp_spline(param, np.c_[self.bzr_control_points[:, 0], self.bzr_control_points[:, 1]], k=2)
+        xnew, y_smooth = spl(np.linspace(0, 1, self.bzr_control_points[:, 0].size * 10)).T
+        print(xnew.size)
+
+        self.datalist.append((self.bzr_control_points[:, 0], self.bzr_control_points[:, 1], "ro:"))
+        self.datalist.append((xnew, y_smooth, ""))
+        for datalist in self.datalist:
+            self.figs.updatePlot(datalist[0], datalist[1], datalist[2])
+
 
     def UpdateFigs(self):
         self.figs.axis.clear()

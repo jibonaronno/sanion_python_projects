@@ -51,3 +51,9 @@ class PathInteractor:
         d = np.sqrt((xt - event.x) ** 2 + (yt - event.y) ** 2)
         ind = d.argmin()
         return ind if d[ind] < self.epsilon else None
+
+    def buildpath(self, x, y):
+        _path = []
+        for i in range(len(x)):
+            _path.append((Path.MOVETO, (x[i], y[i])))
+        return _path
