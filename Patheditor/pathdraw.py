@@ -1,3 +1,11 @@
+'''
+https://stackoverflow.com/questions/37514039/selecting-and-editing-specific-markers-using-matplotlib
+There are a few ways for you to do this. I doubt there is an easy way for you to drag the line itself.
+To drag the line markers (but without seeing any) just make sure they exist but are transparent.
+I'm going to use an example from matplotlib documentation: The Path Editor.
+Here is the modified code:
+'''
+
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -5,7 +13,7 @@ from matplotlib.backend_bases import MouseButton
 from matplotlib.patches import PathPatch
 from matplotlib.path import Path
 
-fig, ax = plt.subplots()
+# fig, ax = plt.subplots()
 
 pathdata = [
     (Path.MOVETO, (1.58, -2.57)),
@@ -16,13 +24,13 @@ pathdata = [
     (Path.CURVE4, (2.2, 3.2)),
     (Path.CURVE4, (3, 0.05)),
     (Path.CURVE4, (2.0, -0.5)),
-    (Path.CLOSEPOLY, (1.58, -2.57)),
+    # (Path.CLOSEPOLY, (1.58, -2.57)),
 ]
 
 codes, verts = zip(*pathdata)
 path = Path(verts, codes)
 patch = PathPatch(path, facecolor='green', edgecolor='yellow', alpha=0.5)
-ax.add_patch(patch)
+# ax.add_patch(patch)
 
 
 class PathInteractor:
@@ -36,9 +44,13 @@ class PathInteractor:
     showverts = True
     epsilon = 5  # max pixel distance to count as a vertex hit
 
-    def __init__(self, canvas):
+    def __init__(self, pathpatch, canvas, fig, axis):
         self.canvas = canvas
-        pass
+        self.axis = axis
+        self.axis.add_patch(patch)
+        self.fig = fig
+        self.pathpatch = pathpatch
+        self.pathpatch.set_animated(True)
 
     def get_ind_under_point(self, event):
         """
