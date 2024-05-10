@@ -6,7 +6,6 @@ import numpy as np
 
 __all__ = ["Bezier"]
 
-
 class Bezier():
     def TwoPoints(t, P1, P2):
         """
