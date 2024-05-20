@@ -142,14 +142,16 @@ class SRVR(object):
 
     def readRegister(self, _start_address, is_twoscompl=False, is_plot=False):
         pass
+
+    # Wave data coming from ACQ in 16bit format where the Value is +32767 to -32767 . But since our variable is 32 bit
+    # wide, it cannot detect Negative values. So by checking the flag is_twoscompl, it also check if the value is greater
+    # than 32767, it will convert it to negative value. Similar code is applied to the LU code and Python acq code.
     def readRegisters(self, _start_address, _reg_count, _block_count, _filename, is_twoscompl=False, is_plot=False, plot_index=0):
         try:
-            #self.single_reg = 0x0000
             xaxis_arr = []
             yaxis_arr = []
             start_address = _start_address
             total_size = 0
-            ix = 1
             ix = 0
             dx = ix
             self.clnt.open()

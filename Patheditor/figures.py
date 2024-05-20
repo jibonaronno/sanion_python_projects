@@ -15,7 +15,7 @@ class FIGS(object):
     def __init__(self, parent):
         self.dash = parent
         self.fig = Figure(figsize=(10, 2), dpi=90)
-        self.axis = self.fig.add_subplot(1,1,1)
+        self.axis = self.fig.add_subplot(1,1,1) # Build a table of axis 1 Row, 1 Column, 1 Index. Each Axis is a graph
         self.canvases = []
 
     def addCanvas(self, fig, frame):

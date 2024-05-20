@@ -59,7 +59,7 @@ class PathInteractor(object):
         x, y = zip(*self.pathpatch.get_path().vertices)
 
         self.line, = ax.plot(x, y, marker='o', markerfacecolor='r', animated=True)
-        self.line.set_markerfacecolor((1, 1, 0, 0))
+        self.line.set_markerfacecolor((1, 1, 1, 1))
 
         self._ind = None  # the active vert
 
