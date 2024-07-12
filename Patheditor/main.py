@@ -1,4 +1,4 @@
-
+import json
 #  DASH class self.com_ports is a list of available ports
 #  DASH class self.comportlisttree is the list box of com ports at left
 #  DASH class self.check_variable_lf check box boolean variable for Line Feed
@@ -45,6 +45,8 @@ import time
 #  from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 class DASH(object):
+    _jsontext = ""
+    _json_object = None
     def __init__(self):
         #  self.parent = _parent
         self.root = tk.Tk()
@@ -133,6 +135,9 @@ class DASH(object):
 
         self.frameF = tk.Frame(self.side_frame, borderwidth=1, relief="groove")
         self.frameF.pack()  # fill='y')
+        self.btnLoadJson = tk.Button(self.frameF, text="Load", command=self.loadJson)
+        self.btnLoadJson.pack(side=tk.LEFT)
+
 
 
         self.ser = None
@@ -147,6 +152,21 @@ class DASH(object):
         self.serdata = ""
 
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)  # Ensure clean exit
+
+    def IterateJson(self, jobject):
+        for key, value in jobject.items():
+            if len(value) > 0:
+                for val in value:
+                    print( str(type(val[0])),  "X:" + str(val[0]) + " Y:" + str(val[1]))
+
+    def loadJson(self):
+        _jsontext = self.textbox_rx.get("1.0", tk.END).strip()
+        if len(_jsontext) > 5:
+            try:
+                self._json_object = json.loads(self.textbox_rx.get("1.0", tk.END).strip())
+                self.IterateJson(self._json_object)
+            except Exception as e:
+                print(str(e))
 
     def sendSerial(self):
         txt = self.textbox_tx.get("1.0", "end-1c")

@@ -8,7 +8,7 @@ Here is the modified code:
 
 import matplotlib.pyplot as plt
 import numpy as np
-
+import json
 from matplotlib.backend_bases import MouseButton
 from matplotlib.patches import PathPatch
 from matplotlib.path import Path
@@ -42,6 +42,7 @@ class PathInteractor:
 
     showverts = True
     epsilon = 5  # max pixel distance to count as a vertex hit
+    _jsontext = ""
 
     def __init__(self, pathpatch, canvas, fig, axis):
         self.canvas = canvas

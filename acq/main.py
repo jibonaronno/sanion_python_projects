@@ -207,7 +207,8 @@ class SRVR(object):
     def readRecordCount(self):
         self.clnt.open()
         reg = self.readRegisters(1028, 1, 0, "NA")
-        print(" STATUS = ", hex(reg))
+        print(" STATUS = ", str(reg))
+        print(" STATUS = ", str(hex(reg)))
         self.clnt.close()
         self.voltwave.clear()
         return (0x00FF & reg)
