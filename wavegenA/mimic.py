@@ -14,10 +14,13 @@ class Mimic(QWidget):
         super().__init__(*args, **kwargs)
         self.widget = uic.loadUi(_UI_PAINT_TABS, self)
         self.setAcceptDrops(True)
+        self.scene = QGraphicsScene()
+        self.scene.addText("Hello, world!")
         self.paint = Paint()
         self.initUI()
 
 
     def initUI(self):
         # self.setGeometry(0, 0, 1500, 1200)
+        self.gfxvu.setScene(self.scene)
         self.vlay01.addWidget(self.paint)

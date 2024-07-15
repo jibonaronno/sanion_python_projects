@@ -26,11 +26,11 @@ class Paint(QWidget):
 
     def paintEvent(self, event):
         qpainter = QPainter(self)
-        qpainter.setPen(QPen(Qt.green, 8, Qt.SolidLine))
+        qpainter.setPen(QPen(Qt.green, 1, Qt.SolidLine))
         # Qt.GlobalColor.green
         qpainter.setBrush(QBrush(Qt.red, Qt.SolidPattern))
         for cpoint in self.controlPoints:
-            qpainter.drawEllipse(cpoint.coord.x(), cpoint.coord.y(), 5, 5)
+            qpainter.drawEllipse(cpoint.coord.x(), cpoint.coord.y(), 10, 10)
 
     def addControlPoint(self, _x, _y):
         coord = QPoint(_x, _y)
