@@ -6,7 +6,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from qtpy import uic
 from paint import Paint
-
+from graphicsscene import GraphicsScene
 _UI_PAINT_TABS = join(dirname(abspath(__file__)), 'charttabs.ui')
 
 class Mimic(QWidget):
@@ -14,13 +14,17 @@ class Mimic(QWidget):
         super().__init__(*args, **kwargs)
         self.widget = uic.loadUi(_UI_PAINT_TABS, self)
         self.setAcceptDrops(True)
-        self.scene = QGraphicsScene()
+        self.scene = GraphicsScene()
         self.scene.addText("Hello, world!")
+        self.scene.addEllipse(10, 10, 10, 10)
         self.paint = Paint()
         self.initUI()
+
 
 
     def initUI(self):
         # self.setGeometry(0, 0, 1500, 1200)
         self.gfxvu.setScene(self.scene)
         self.vlay01.addWidget(self.paint)
+        for itm in self.scene.items():
+            itm.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, True)
