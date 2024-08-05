@@ -1,4 +1,9 @@
-#!/usr/bin/python3
+'''
+Reminder : mimic.py contains multiple tabs and the base UI created from QTDesigner app 'charttab.ui'.
+In Flowmeter app mimic.py itself handles paint event for a tab. Here we are trying to use QGraphicsScene
+class for drawing ops.
+'''
+
 import sys
 from os.path import join, dirname, abspath
 from PyQt5.QtCore import *
@@ -19,7 +24,6 @@ class Mimic(QWidget):
         self.scene.addEllipse(10, 10, 10, 10)
         self.paint = Paint()
         self.initUI()
-
 
 
     def initUI(self):
