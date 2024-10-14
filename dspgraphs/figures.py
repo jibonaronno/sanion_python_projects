@@ -12,7 +12,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 
 class FIGS(object):
     def __init__(self):
-        self.fig = Figure(figsize=(10, 2), dpi=80)
+        self.fig = Figure(figsize=(10, 2), dpi=90)
         self.plot = self.fig.add_subplot(1,1,1)
         self.canvases = []
 
@@ -35,7 +35,7 @@ class FIGS(object):
                 x = np.array(new_x)
             y = np.array(new_y)
             print(f"LEN x:{len(x)} LEN y:{len(y)}")
-            self.plot.clear()
+            #  self.plot.clear()
             self.plot.plot(x, y)
             for canvas in self.canvases:
                 canvas.draw()

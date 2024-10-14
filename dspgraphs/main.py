@@ -29,13 +29,14 @@ from tkinter import ttk
 
 import serial
 from serial.tools import list_ports
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from figures import FIGS
+from polarblock import POLARBLOCK
 from primaryloop import SensorThread
 from threading import Thread, Event
 import queue
 import time
+#  from matplotlib.figure import Figure
+#  from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 
 
@@ -44,7 +45,8 @@ class DASH(object):
         #  self.parent = _parent
         self.root = tk.Tk()
         self.root.title("DASH")
-        self.root.state("zoomed")
+        #  self.root.state("zoomed")
+        self.root.geometry('940x800')
         self.side_frame = tk.Frame(self.root, borderwidth=1, relief="groove")  #,yscrollcommand=scrollbar.set)
         self.side_frame.pack(side="left") #  , fill="y")
 
@@ -57,12 +59,14 @@ class DASH(object):
         self.frameA = tk.Frame(self.side_frame, borderwidth=1, relief="groove")
         self.frameA.pack() #  fill='y')
 
-        self.btnRead = tk.Button(self.frameA, text="Read Again", command=self.readAgain)
+
         self.btnConnect = tk.Button(self.frameA, text="Connect", command=self.connect_to_port, state="disabled")
         self.btnRedraw = tk.Button(self.frameA, text="Redraw", command=self.redrawFigs)
-        self.btnRead.pack(side="left")
+        self.btnRedrawPolar = tk.Button(self.frameA, text="Draw Polar", command=self.redrawPolarFigs)
+
         self.btnConnect.pack(side="left")
         self.btnRedraw.pack(side="left")
+        self.btnRedrawPolar.pack(side="left")
         self.btnUpdate = tk.Button(self.frameA, text="Update", command=self.UpdateFigs)
         self.btnUpdate.pack(side=tk.LEFT)
         self.charts_frame = tk.Frame(self.root, borderwidth=2, relief="raised")
@@ -72,9 +76,10 @@ class DASH(object):
         self.canvases = []
 
         self.datalist = []
-        self.datalist.append([])
+        self.datalistforgraph = []
+        #  self.datalist.append([])
 
-        self.comportlisttree = tk.Listbox(self.side_frame, width=50)
+        self.comportlisttree = tk.Listbox(self.side_frame, width=50, height=4)
         self.comportlisttree.bind("<<ListboxSelect>>", self.on_select_list_item)
         self.comportlisttree.pack(padx=5, pady=5)
         self.com_ports = []
@@ -89,51 +94,129 @@ class DASH(object):
         self.checkbox_lf = tk.Checkbutton(self.frameB, text="LF", variable=self.check_variable_lf)
         self.checkbox_lf.pack(side="bottom")
         self.figs = FIGS()
+        self.polarplot = POLARBLOCK()
         #  self.redrawFigs()
 
         self.frameC = tk.Frame(self.side_frame, borderwidth=1, relief="groove")
         self.frameC.pack() #  fill='y')
         self.btnStartCollect = tk.Button(self.frameC, text="Start Collect", command=self.startCollect)
-        self.btnStartCollect.pack(side=tk.LEFT)
+        #  self.btnStartCollect.pack(side=tk.LEFT)
         self.btnSend = tk.Button(self.frameC, text="Send", command=self.sendSerial)
         self.btnSend.pack(side=tk.LEFT)
         self.btnClear = tk.Button(self.frameC, text="Clear", command=self.clearListbox)
         self.btnClear.pack(side=tk.LEFT)
+        self.btnRemove = tk.Button(self.frameC, text="Remove", command=self.removeFromList, state="disabled")
+        self.btnRemove.pack(side=tk.LEFT)
+        self.btnMakeTable = tk.Button(self.frameC, text="Make Table", command=self.start_data_table_timer) # , state="disabled")
+        self.btnMakeTable.pack(side=tk.LEFT)
 
         self.frameD = tk.Frame(self.side_frame, borderwidth=1, relief="groove")
         self.frameD.pack() #  fill='y')
-        self.serialdatalistbox = tk.Listbox(self.frameD, width=60)
-        self.serialdatalistbox.pack(padx=5, pady=5)
+        #  self.serialdatalistbox = tk.Listbox(self.frameD, width=50)
+        #  self.serialdatalistbox.pack(padx=5, pady=5)
 
         self.frameE = tk.Frame(self.side_frame, borderwidth=1, relief="groove")
         self.frameE.pack()  # fill='y')
-        self.textbox_rx = tk.Text(self.frameE, height=8, width=50)  # , width=40)
-        self.textbox_rx.pack(side="left", padx=5, pady=5)
+        self.textbox_rx = tk.Text(self.frameE, height=8, width=42)  # , width=40)
+
+        self.textbox_rx_scrollbar = ttk.Scrollbar(self.frameE, orient=tk.VERTICAL, command=self.textbox_rx.yview)
+        self.textbox_rx.configure(yscroll=self.textbox_rx_scrollbar.set)
+        self.textbox_rx_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.textbox_rx.pack(side="top", padx=5, pady=5)
+
+        self.frameF = tk.Frame(self.side_frame, borderwidth=1, relief="groove")
+        self.frameF.pack()  # fill='y')
+
 
         self.ser = None
+        self.Rtree = None
+        self.RtreeScrollbar = None
+
+        self.data_table_redraw_timer_id = None
 
         self.serial_port = ""
         self.sensor_thread = None # SensorThread()
         self.serial_queue = queue.Queue()
+        self.serdata = ""
 
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)  # Ensure clean exit
 
     def sendSerial(self):
         txt = self.textbox_tx.get("1.0", "end-1c")
-        txt = txt + "\r"
+        if self.check_variable_lf.get():
+            txt = txt + "\r"
+            print("Checked")
         print(txt)
         if self.ser:
             if self.ser.is_open:
                 # self.ser.write(str(txt).encode("utf-8"))
                 self.ser.write(str(txt).encode("ascii"))
-                self.datalist[0].clear()
+                self.datalist.clear()
 
     def clearListbox(self):
-        self.serialdatalistbox.delete(0, tk.END)
+        #  self.serialdatalistbox.delete(0, tk.END)
+        self.datalist.clear()
+        self.datalistforgraph.clear()
+        if self.Rtree:
+            for chld in self.Rtree.get_children():
+                self.Rtree.delete(chld)
 
     def startCollect(self):
         #  Starting Thread
         self.sensor_thread.start()
+
+    def reset_data_table_timer(self):
+        if self.data_table_redraw_timer_id:
+            self.root.after_cancel(self.data_table_redraw_timer_id)
+            self.start_data_table_timer()
+        else:
+            self.start_data_table_timer()
+
+    def start_data_table_timer(self):
+        # Start a timer for 5 seconds (5000 milliseconds)
+        self.data_table_redraw_timer_id = self.root.after(500, self.data_table_timer_callback)
+
+    def data_table_timer_callback(self):
+        self.drawTreeTable(len(self.datalist[0]), self.frameF, self.datalist)
+        #  self.drawTreeTable(2, self.frameF, self.datalist)
+        print(f'Length .datalist {len(self.datalist[0])} , {self.datalist[0]}')
+
+    def drawTreeTable(self, column_count, frame, dta: []):
+        if column_count > 0:
+            if self.Rtree:
+                self.Rtree.destroy()
+            if self.RtreeScrollbar:
+                self.RtreeScrollbar.destroy()
+            columns = []
+            column_names = []
+            print(str(column_count))
+            for idx in range(column_count):
+                columns.append('#' + str(idx+1))
+                column_names.append("COL:" + str(idx+1))
+            self.Rtree = ttk.Treeview(frame, columns=columns, show='headings')
+            for col, name in zip(columns, column_names):
+                self.Rtree.heading(col, text=name)
+            for idx in range(column_count):
+                self.Rtree.column(f'#{str(idx+1)}', width=70)
+            dtaa = []
+
+            for idx in range(len(dta[0])):
+                self.datalistforgraph.append([])
+
+            for unt in dta:
+                dtaa.append(unt)
+                idxx = 0
+                for ele in unt:
+                    self.datalistforgraph[idxx].append(ele)
+                    idxx = idxx + 1
+
+            print(f"dta : {len(dta)} LENTH: {len(dtaa)}")
+            for row in dtaa:
+                self.Rtree.insert('', tk.END, values=row)
+            self.RtreeScrollbar = ttk.Scrollbar(frame, orient=tk.VERTICAL, command=self.Rtree.yview)
+            self.Rtree.configure(yscroll=self.RtreeScrollbar.set)
+            self.RtreeScrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+            self.Rtree.pack()
 
     def on_closing(self):
         if self.sensor_thread:
@@ -144,12 +227,24 @@ class DASH(object):
 
     def redrawFigs(self):
         self.figs.addSampleCanvas(self.charts_frame)
-        self.figs.updatePlot([1], self.datalist[0])
+        self.figs.plot.clear()
+        self.polarplot.addSampleCanvas(self.charts_frame)
+        #self.figs.updatePlot([1], self.datalist[0])
+        for datalist in self.datalistforgraph:
+            self.figs.updatePlot([1], datalist)
+
         #new_y = [5, 3, 1, 2, 4, 2, 6, 10, 1, 11, 12,9,8,7,6,10,11,12,13,14]
         #self.figs.updatePlot([1], new_y)
 
+    def redrawPolarFigs(self):
+        self.polarplot.addSampleCanvas(self.charts_frame)
+        self.polarplot.axis1.clear()
+
     def UpdateFigs(self):
-        self.figs.updatePlot([1], self.datalist[0])
+        self.figs.plot.clear()
+        for datalist in self.datalistforgraph:
+            self.figs.updatePlot([1], datalist)
+        ##self.figs.updatePlot([1], self.datalist[0])
 
     def show(self):
         self.root.mainloop()
@@ -171,19 +266,68 @@ class DASH(object):
             print("Selected Port : ", selected_port)
             self.btnConnect.config(state="normal")
 
+    def removeFromList(self):
+        pass
+
+    def isFloat(self, digits:str):
+        dgts = digits.replace(".", "")
+        dgts = dgts.replace("-", "")
+        if dgts.isdigit():
+            return True
+        else:
+            return False
+
+    def getNumbersListFromCommaSeparatedString(self, dta:str):
+        lst = None
+        if ',' in dta:
+            lst = dta.split(',')
+            for ele in lst:
+                ele = ele.rstrip()
+                # if ele.isdigit():
+                if self.isFloat(ele):
+                    pass
+                else:
+                    return [dta]
+
+            return lst
+        else:
+            return [dta]
+
     def onSerialDataReceived(self, event):
         if event:
             #  data = event.__getattribute__("data")
             #  print(event.__dict__)
             #  self.serialdatalistbox.insert(self.serialdatalistbox.size(), "%s" % event)
+            temp_list = []
             dta = "%s" % event
             try:
-                if float(dta) < 0.9:
-                    self.datalist[0].append(float(str(dta)))
-                    self.serialdatalistbox.insert(self.serialdatalistbox.size(), float(str(dta)))
-            except:
-                pass
-            ####  self.textbox_rx.insert(tk.END, dta)
+                lst = self.getNumbersListFromCommaSeparatedString(dta)
+                lstsize = len(lst)
+                #  print(f"csv size :{dta} : {str(lstsize)}")
+
+                temp_list.clear()
+                ####  if float(dta) < 10:
+                for idx in range(lstsize):
+                    temp_list.append(float(str(lst[idx])))
+                    #  self.datalist[idx].append(float(str(lst[idx])))
+                    #  print(str(idx))
+                    #  print(str(self.datalist[-1]))
+                self.datalist.append(temp_list)
+                # if '\n' not in self.serdata:
+                #     self.serdata += dta
+                #     print(self.serdata)
+                # else:
+                #     self.datalist[0].append(float(str(self.serdata)))
+                #     self.serdata = ''
+                #  This Listbox is hidden and not used for now. I am concentrating to Treeview GUI for table
+                #  view for multiple columns.
+                #  self.serialdatalistbox.insert(self.serialdatalistbox.size(), float(str(dta)))
+                self.reset_data_table_timer()
+            except Exception as e:
+                print(f"ERR::{str(e)}")
+            txt = dta.replace('\r', '\n')
+            self.textbox_rx.insert(tk.END, txt)
+            ###  print(dta)
             #  self.serialdatalistbox.insert(self.serialdatalistbox.size(), "Event")
     def connect_to_port(self):
         selected_index = self.comportlisttree.curselection()
@@ -208,14 +352,13 @@ class DASH(object):
                 cmd = self.root.register(self.onSerialDataReceived)
                 self.root.tk.call("bind", self.root, "<<DataAvailable>>", cmd + " %d")
 
+                self.startCollect() # Just start the thread ( self.sensor_thread.start() )
+
             except serial.SerialException as e:
                 print("Error Serial Port Connection", e)
 
     #  Write a command to the COM port (example: sending 'Hello')
     #  ser.write(b'Hello\n')  # The device connected to the COM port needs to understand this command
-
-    def readAgain(self):
-        pass
 
 
 # Press the green button in the gutter to run the script.
