@@ -282,6 +282,13 @@ class DASH(object):
         for datalist in self.datalist:
             self.figs.updatePlot(datalist[0], datalist[1], datalist[2])
 
+        str_ysmooth = ''
+        for ysmooth in y_smooth:
+            if(ysmooth < 0):
+                ysmooth = 0
+            str_ysmooth = str_ysmooth + str(int(ysmooth) * 5) + ','
+        print(str_ysmooth)
+
 
     def UpdateFigs(self):
         self.figs.axis.clear()
