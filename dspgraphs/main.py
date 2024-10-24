@@ -269,6 +269,9 @@ class DASH(object):
     def removeFromList(self):
         pass
 
+    # This function does not look like if the string is float or not
+    # It checks only if the string is all digit numbers or not
+    # called by getNumbersListFromCommaSeparatedString(...) function
     def isFloat(self, digits:str):
         dgts = digits.replace(".", "")
         dgts = dgts.replace("-", "")
@@ -277,6 +280,8 @@ class DASH(object):
         else:
             return False
 
+    # As we assume that each line consist multiple numbers seperated by comma,
+    # we will make a list from this comma seperated string.
     def getNumbersListFromCommaSeparatedString(self, dta:str):
         lst = None
         if ',' in dta:
@@ -329,6 +334,9 @@ class DASH(object):
             self.textbox_rx.insert(tk.END, txt)
             ###  print(dta)
             #  self.serialdatalistbox.insert(self.serialdatalistbox.size(), "Event")
+
+    # This function connects to port from the selected item of the port list. It also binds the serial data receive
+    # event with a main/root window callback function.
     def connect_to_port(self):
         selected_index = self.comportlisttree.curselection()
         #  print(selected_index) #  selected_index is a tuple like (0, )
@@ -366,4 +374,3 @@ if __name__ == '__main__':
     dash = DASH()
     dash.show()
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
