@@ -12,6 +12,7 @@ import serial
 import serial.tools.list_ports as port_list
 
 from mimic import Mimic
+from comparison_chart import CompareChartWidget
 
 # _UI5 = join(dirname(abspath(__file__)), 'charttabs.ui')
 _UI_TOP = join(dirname(abspath(__file__)), 'top.ui')
@@ -22,17 +23,25 @@ class MainWindow(QMainWindow):
         QMainWindow.__init__(self)
         self.widget = uic.loadUi(_UI_TOP, self)
         self.mimic = Mimic()
+        self.comparison_chart = CompareChartWidget(dirname(abspath(__file__)))
         self.UiComponents()
         self.show()
 
     def UiComponents(self):
         self.actionOpen.triggered.connect(self.OpenFile)
+        self.actionOpen_Folder.triggered.connect(self.OpenFolder)
 
     def OpenFile(self):
         print("Menu -> Open File")
         location = dirname(abspath(__file__)) + '\\'
         fname = QFileDialog.getOpenFileName(self, 'Open file', location, "json files (*.json *.txt)")
-        self.mimic.showNormal()
+
+    def OpenFolder(self):
+        print("Menu -> Open Folder")
+        location = dirname(abspath(__file__)) + '\\'
+        foldername = QFileDialog.getExistingDirectory(self, "Select Folder", location)
+        # self.mimic.showNormal()
+        self.comparison_chart.showNormal()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
@@ -43,5 +52,4 @@ if __name__ == '__main__':
     # mw.showFullScreen()
     mw.showNormal()
     sys.exit(app.exec_())
-
 
