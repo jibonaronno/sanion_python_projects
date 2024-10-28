@@ -1,7 +1,10 @@
-# This is a sample Python script.
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+'''
+ Understand python's struct module for unpack functions.
+ In the unpack function
+ # '<' indicates the source data is Little Endian
+ # 'h' asks for short integer
+'''
 
 from pathlib import Path
 from os.path import join, dirname, abspath
@@ -114,7 +117,8 @@ class BinaryFileReader(object):
         barray = self.ficontent[_offset:]
         print("Length : ", len(barray))
         #integers = struct.unpack("!%sH" % (len(barray) // 2), barray)
-        integers = unpack('<'+'h'*(len(barray)//2), barray)
+        integers = unpack('<'+'h'*(len(barray)//2), barray) # '<' indicates the source data is Little Endian
+                                                            # 'h' asks for short integer
         print("Type of each element : ", type(integers[0]))
         print(integers)
         pass
@@ -376,4 +380,3 @@ if __name__ == '__main__':
 
     pass
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/

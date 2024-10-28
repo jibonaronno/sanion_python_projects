@@ -23,7 +23,7 @@ class MainWindow(QMainWindow):
         QMainWindow.__init__(self)
         self.widget = uic.loadUi(_UI_TOP, self)
         self.mimic = Mimic()
-        self.comparison_chart = CompareChartWidget(dirname(abspath(__file__)))
+        self.comparison_chart = None
         self.UiComponents()
         self.show()
 
@@ -40,8 +40,10 @@ class MainWindow(QMainWindow):
         print("Menu -> Open Folder")
         location = dirname(abspath(__file__)) + '\\'
         foldername = QFileDialog.getExistingDirectory(self, "Select Folder", location)
-        # self.mimic.showNormal()
+        self.comparison_chart = CompareChartWidget(foldername)
         self.comparison_chart.showNormal()
+
+        # self.mimic.showNormal()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

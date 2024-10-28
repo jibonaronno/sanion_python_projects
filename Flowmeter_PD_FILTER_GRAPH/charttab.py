@@ -1,4 +1,8 @@
 
+'''
+FAQ: What is self.flowdata ?
+    self.flowdata is a queue object. for easy pop and easy append.
+'''
 from os.path import join, dirname, abspath
 from qtpy import uic
 from qtpy.QtCore import Slot, QTimer, QThread, Signal, QObject, Qt
