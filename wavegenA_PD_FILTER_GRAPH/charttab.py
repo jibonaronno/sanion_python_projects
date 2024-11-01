@@ -1,5 +1,7 @@
 
 '''
+Project builds on PyQt5 Matplotlib . Codes coming from Flowmeter, filereader.dat projects.
+
 FAQ: What is self.flowdata ?
     self.flowdata is a queue object. for easy pop and easy append.
 '''

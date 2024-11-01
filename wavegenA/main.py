@@ -44,4 +44,3 @@ if __name__ == '__main__':
     mw.showNormal()
     sys.exit(app.exec_())
 
-
