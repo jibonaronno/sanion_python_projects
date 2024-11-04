@@ -16,7 +16,7 @@ import pyqtgraph as pg
 from collections import deque
 
 _UI5 = join(dirname(abspath(__file__)), 'charttabs.ui')
-from charttab import ChartTab
+# from charttab import ChartTab
 
 class ChartTab(QWidget):
     def __init__(self, parent=None):
@@ -28,11 +28,11 @@ class ChartTab(QWidget):
         self.plotter = PlotWidget()
         self.plotter.showGrid(x=True, y=True, alpha=None)
         self.plotter.setLabel('left', 'Flow : m3/M')
-        self.plotter.getViewBox().setYRange(0, 40)
+        self.plotter.getViewBox().setYRange(-65, 40)
         self.curve1 = self.plotter.plot(0, 0, "flow", 'b')
         self.ttm = 0.0
         self.tfdata = deque()
-        self.maxLen = 100
+        self.maxLen = 7680
         self.vlay01.addWidget(self.plotter)
         self.initUI()
 
@@ -41,7 +41,7 @@ class ChartTab(QWidget):
         if len(self.flowdata) > self.maxLen:
             self.flowdata.popleft()
         if len(self.tfdata) < self.maxLen:
-            self.ttm += 5.0
+            self.ttm += 0.032
             self.tfdata.append(self.ttm)
         self.curve1.setData(self.tfdata, self.flowdata)
 

@@ -31,6 +31,19 @@ class BinaryFileReader(object):
         print(integers)
         pass
 
+    def getArray(self):
+        barray = self.ficontent[0:]
+        integers = unpack('>' + 'b' * (len(barray)), barray)    # '<' indicates the source data is Little Endian
+                                                                # 'b' asks for signed 8bit integer
+        return integers
+
+    def printFilContentSize(self, fullpath:str):
+        #if self.ficontent != None:
+        #    if len(self.ficontent) > 0:
+        #        self.ficontent.clear()
+        self.readFil(fullpath)
+        print(str(len(self.ficontent)))
+
     def printContent_16(self, _offset=98):
         barray = self.ficontent[_offset:]
         print("Length : ", len(barray))

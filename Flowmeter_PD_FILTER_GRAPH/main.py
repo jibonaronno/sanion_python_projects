@@ -265,7 +265,7 @@ class MainWindow(QMainWindow):
 
     @Slot()
     def on_btn2_clicked(self):
-        #self.mimic.show() # Enable This Line to show the Mimic without starting sensorThread.
+        self.mimic.show() # Enable This Line to show the Mimic without starting sensorThread.
         if self.sensorPortOpen:
             if not self.sensorThreadCreated:
                 self.startSensorThread()
