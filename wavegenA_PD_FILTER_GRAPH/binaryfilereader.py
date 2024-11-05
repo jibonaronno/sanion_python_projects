@@ -33,7 +33,7 @@ class BinaryFileReader(object):
 
     def getArray(self):
         barray = self.ficontent[0:]
-        integers = unpack('>' + 'b' * (len(barray)), barray)    # '<' indicates the source data is Little Endian
+        integers = unpack('<' + 'b' * (len(barray)), barray)    # '<' indicates the source data is Little Endian
                                                                 # 'b' asks for signed 8bit integer
         return integers
 

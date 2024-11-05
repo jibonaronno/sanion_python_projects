@@ -41,7 +41,7 @@ class ChartTab(QWidget):
         if len(self.flowdata) > self.maxLen:
             self.flowdata.popleft()
         if len(self.tfdata) < self.maxLen:
-            self.ttm += 0.032
+            self.ttm += 0.1302
             self.tfdata.append(self.ttm)
         self.curve1.setData(self.tfdata, self.flowdata)
 

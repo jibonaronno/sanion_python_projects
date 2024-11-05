@@ -13,6 +13,8 @@ from PyQt5.QtCore import QModelIndex
 from charttab import ChartTab
 import os
 from binaryfilereader import BinaryFileReader
+import numpy as np
+from kalmanfilter import KalmanFilter
 # import sys
 # from PyQt5.QtGui import QIcon
 # from PyQt5.QtCore import QDir
@@ -41,6 +43,7 @@ class CompareChartWidget(QWidget):
         #self.horizontalLayout_ = QHBoxLayout()
         self.horizontalLayout_4.addWidget(self.charts01)
         self.horizontalLayout_5.addWidget(self.charts02)
+        self.kalmann = None
 
     def getFilesInFolder(self, folder_path):
         file_names = []
@@ -76,15 +79,40 @@ class CompareChartWidget(QWidget):
 
     def injectDataStreamToGraph(self):
         bytesArray = self.binfil.getArray()
+        predictions = self.kalmann.filterB(bytesArray)
         for byt in bytesArray:
             self.charts01.Append(int(byt))
+        for byt in predictions:
+            self.charts02.Append(byt[0])
+
+    def showKalmannPlotlib(self):
+        bytesArray = self.binfil.getArray()
+        dt = 1000.0 / 7680.0
+        F = np.array([[1, dt, 0], [0, 1, dt], [0, 0, 1]])
+        H = np.array([1, 0, 0]).reshape(1, 3)
+        Q = np.array([[0.09, 0.09, 0.0], [0.09, 0.09, 0.0], [0.0, 0.0, 0.0]])
+        R = np.array([1.0]).reshape(1, 1)
+        self.kalmann = KalmanFilter(F = F, H = H, Q = Q, R = R)
+        self.kalmann.filterA(bytesArray)
+
+    def showKalmann(self):
+        bytesArray = self.binfil.getArray()
+        dt = 1000.0 / 7680.0
+        F = np.array([[1, dt, 0], [0, 1, dt], [0, 0, 1]])
+        H = np.array([1, 0, 0]).reshape(1, 3)
+        Q = np.array([[0.09, 0.09, 0.0], [0.09, 0.09, 0.0], [0.0, 0.0, 0.0]])
+        R = np.array([4.9]).reshape(1, 1)
+        self.kalmann = KalmanFilter(F=F, H=H, Q=Q, R=R)
+        self.injectDataStreamToGraph()
 
     def on_tree_item_click(self, index: QModelIndex):
         # Retrieve the item that was clicked
         item = self.model.itemFromIndex(index)
         print(f"Clicked on: {item.text()} : {self.file_path_dictionary[item.text()]}")
         self.binfil.printFilContentSize(self.file_path_dictionary[item.text()])
-        self.injectDataStreamToGraph()
+        # self.injectDataStreamToGraph()
+        # self.showKalmannPlotlib()
+        self.showKalmann()
 
 
     @Slot()
