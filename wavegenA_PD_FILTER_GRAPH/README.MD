@@ -22,7 +22,7 @@ Data captured in web based signal viewer as below: <br><br>
 
 <img alt="NO IMAGE" src="img/img054.jpg"><br><br>
 
-
+This is a single cycle, which is 1/60 second. 
 
 
 ### Final code will be merged into wavegenA_PD_FILTER_GRAPH. <br>
