@@ -101,7 +101,7 @@ class CompareChartWidget(QWidget):
         F = np.array([[1, dt, 0], [0, 1, dt], [0, 0, 1]])
         H = np.array([1, 0, 0]).reshape(1, 3)
         Q = np.array([[0.09, 0.09, 0.0], [0.09, 0.09, 0.0], [0.0, 0.0, 0.0]])
-        R = np.array([4.9]).reshape(1, 1)
+        R = np.array([1]).reshape(1, 1)
         self.kalmann = KalmanFilter(F=F, H=H, Q=Q, R=R)
         self.injectDataStreamToGraph()
 
@@ -114,8 +114,17 @@ class CompareChartWidget(QWidget):
         # self.showKalmannPlotlib()
         self.showKalmann()
 
+    def prepareExport(self):
+        if len(self.file_path_dictionary) > 0:
+            for key, name in self.file_path_dictionary.items():
+                print(key, name)
 
     @Slot()
     def on_btnParse01_clicked(self):
         pass
         # self.InvokeFileModel()
+
+    @Slot()
+    def on_btnExport_clicked(self):
+        self.prepareExport()
+        pass
