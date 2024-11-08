@@ -41,6 +41,20 @@ any file. The file processing takes about 10 to 15 second. Then it will show the
 signal and the filtered signal in top and bottom graph. <br>
 <img alt="NO IMAGE" src="img/img051.jpg"><br><br>
 
+After some changes in the filter parameters, here is the output again:
+```Python
+    def showKalmann(self):
+        bytesArray = self.binfil.getArray()
+        dt = 1000.0 / 7680.0
+        F = np.array([[1, dt, 0], [0, 1, dt], [0, 0, 1]])
+        H = np.array([1, 0, 0]).reshape(1, 3)
+        Q = np.array([[0.09, 0.09, 0.0], [0.09, 0.09, 0.0], [0.0, 0.0, 0.0]])
+        R = np.array([1]).reshape(1, 1)
+        self.kalmann = KalmanFilter(F=F, H=H, Q=Q, R=R)
+        self.injectDataStreamToGraph()
+```
+<img alt="NO IMAGE" src="img/img055.jpg"><br><br>
+
 
 ```Python
 ```
