@@ -127,10 +127,10 @@ class BinaryFileReader(object):
         header = {}
         hdr_array = [] #bytearray(0)
 
-        hdr_array.append(unpack(">B", self.ficontent[0:1])[0]) # Event type
-        hdr_array.append(unpack(">I", self.ficontent[1:5])[0]) # Event Time - year month day ...
-        hdr_array.append(unpack(">I", self.ficontent[5:9])[0]) # Event Time ms
-        hdr_array.append(unpack(">B", self.ficontent[9:10])[0])  # Alert Level
+        hdr_array.append(unpack(">B", self.ficontent[0:1])[0])    # Event type
+        hdr_array.append(unpack(">I", self.ficontent[1:5])[0])    # Event Time - year month day ...
+        hdr_array.append(unpack(">I", self.ficontent[5:9])[0])    # Event Time ms
+        hdr_array.append(unpack(">B", self.ficontent[9:10])[0])   # Alert Level
         hdr_array.append(unpack(">f", self.ficontent[10:14])[0])  # Contact Duty A. Breaking Current A
         hdr_array.append(unpack(">f", self.ficontent[14:18])[0])  # Contact Duty B. Breaking Current B
         hdr_array.append(unpack(">f", self.ficontent[18:22])[0])  # Contact Duty C. Breaking Current C

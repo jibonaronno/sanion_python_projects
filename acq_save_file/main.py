@@ -32,6 +32,7 @@ class DASH(object):
         self.upper_frame.pack(fill="both", expand=True)
         self.canvases = []
 
+
     def readAgain(self):
         self.parent.readAgain()
 
@@ -59,7 +60,7 @@ class DASH(object):
 class SRVR(object):
     def __init__(self):
         #self.srvr = ModbusServer("localhost", 100, no_block=False)
-        self.clnt = ModbusClient(host='192.168.247.100', port=100, auto_open=False, debug=False)
+        self.clnt = ModbusClient(host='192.168.246.100', port=100, auto_open=False, debug=False)
         #self.__address = 8212
         self.__address = 10516
         #self.__address = 17428
@@ -70,6 +71,7 @@ class SRVR(object):
         self.dash = DASH(self)
         self.single_reg =  0x0000
         self.contactAB_string = ""
+        self.isPlotAssigned = False
         for _i in range(7):
             #xrr = np.array([1, 2, 3, 4, 5, 6])
             #yrr = np.array([1, 2, 3, 4, 5, 6])
@@ -122,6 +124,7 @@ class SRVR(object):
         self.dash.canvases.clear()
         self.dash.assignCanvases(self.subplots)
         self.dash.drawCanvases()
+        self.isPlotAssigned = True
 
     def cnnct(self):
         try:
@@ -152,7 +155,8 @@ class SRVR(object):
     # Wave data coming from ACQ in 16bit format where the Value is +32767 to -32767 . But since our variable is 32 bit
     # wide, it cannot detect Negative values. So by checking the flag is_twoscompl, it also check if the value is greater
     # than 32767, it will convert it to negative value. Similar code is applied to the LU code and Python acq code.
-    def readRegisters(self, _start_address, _reg_count, _block_count, _filename, is_twoscompl=False, is_plot=False, plot_index=0):
+    # Here 3rd Parameter Should be BlockSize instead _reg_count
+    def readRegisters(self, _start_address, _reg_count, _block_count, _filename='N/A', is_twoscompl=False, is_plot=False, plot_index=0):
         try:
             xaxis_arr = []
             yaxis_arr = []
@@ -165,6 +169,7 @@ class SRVR(object):
             self.voltwave.append("Reg Address,Data\n")
             while True:
                 regs_1 = self.clnt.read_holding_registers(_start_address, _reg_count)
+                print(type(regs_1))
                 if len(regs_1) > 0:
                     self.single_reg = regs_1[0]
                 total_size = total_size + len(regs_1)
@@ -219,6 +224,9 @@ class SRVR(object):
             self.voltwave.clear()
             return (0x00FF & reg)
         return 0
+
+    def readEvent(self):
+        self.readRegisters(1200, 34, 1, "event.csv", is_plot=False)
     def readInitiateAndContact(self):
         subplt = self.readRegisters(17428, 64, 18, "init_and_contact.csv", is_plot=True)
         #if subplt is not None:
@@ -275,6 +283,8 @@ class SRVR(object):
             self.readPhaseBCurr()
             self.readPhaseCCurr()
             self.readInitiateAndContact()
+            if not self.isPlotAssigned:
+                self.assignPlotsToDash()
 
 
 # Press the green button in the gutter to run the script.
