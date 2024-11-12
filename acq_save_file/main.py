@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import tkinter as tk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-
+from structhelper import StructHelper
 
 class DASH(object):
     def __init__(self, _parent):
@@ -26,6 +26,8 @@ class DASH(object):
         self.btnRead = tk.Button(self.side_frame, text="Read Again", command=self.readAgain)
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.btnRead.pack()
+        self.btnReadEventHeader = tk.Button(self.side_frame, text='Read Event Header', command=self.readEventHeader)
+        self.btnReadEventHeader.pack()
         self.charts_frame = tk.Frame(self.root)
         self.charts_frame.pack()
         self.upper_frame = tk.Frame(self.charts_frame)
@@ -36,6 +38,8 @@ class DASH(object):
     def readAgain(self):
         self.parent.readAgain()
 
+    def readEventHeader(self):
+        self.parent.readAllAndSave()
 
     def assignCanvases(self, plots: []):
         plot_counts = len(plots)
@@ -169,7 +173,7 @@ class SRVR(object):
             self.voltwave.append("Reg Address,Data\n")
             while True:
                 regs_1 = self.clnt.read_holding_registers(_start_address, _reg_count)
-                print(type(regs_1))
+                # print(type(regs_1))
                 if len(regs_1) > 0:
                     self.single_reg = regs_1[0]
                 total_size = total_size + len(regs_1)
@@ -215,6 +219,28 @@ class SRVR(object):
             print("Exception " + str(e))
             return None
 
+    def readRegistersBytes(self, _start_address, _block_size, _number_of_blocks):
+        try:
+            start_address = _start_address
+            total_size = 0
+            ix = 0
+            dx = ix
+            _bytes = bytearray(b'')
+            self.clnt.open()
+            while True:
+                regs_1 = self.clnt.read_holding_registers(_start_address, _block_size)
+                for reg in regs_1:
+                    bytes_read = reg.to_bytes(2, "little")
+                    _bytes.extend(bytes_read)
+                dx = dx + 1
+                if dx == _number_of_blocks:
+                    break
+            return _bytes
+        except Exception as e:
+            self.clnt.close()
+            print("Exception " + str(e))
+            return None
+
     def readRecordCount(self):
         if self.clnt.open():
             reg = self.readRegisters(1028, 1, 0, "NA")
@@ -226,7 +252,36 @@ class SRVR(object):
         return 0
 
     def readEvent(self):
-        self.readRegisters(1200, 34, 1, "event.csv", is_plot=False)
+        _bytes_arr = self.readRegistersBytes(1200, 34, 1)
+        print(f'_bytes_arr size : {len(_bytes_arr)}')
+        lidx = 0
+        for _byte in _bytes_arr:
+            if lidx < 8:
+                print(f'{hex(_byte)}', end=' ')
+                lidx = lidx + 1
+            else:
+                print(f'\n{hex(_byte)}', end=' ')
+                lidx = 1
+
+    def readAllAndSave(self):
+        fullBytesArr = self.readFullBytes()
+        tsize = 0
+        for _bytes in fullBytesArr:
+            tsize = tsize + len(_bytes)
+        print(f'Total Size : {tsize}')
+
+    def readFullBytes(self):
+        _bytes_arr = []
+        _bytes_arr.append(self.readRegistersBytes(1200, 34, 1))
+        _bytes_arr.append(self.readRegistersBytes(1300, 64, 36))
+        _bytes_arr.append(self.readRegistersBytes(3604, 64, 36))
+        _bytes_arr.append(self.readRegistersBytes(5908, 64, 36))
+        _bytes_arr.append(self.readRegistersBytes(10516, 64, 36))
+        _bytes_arr.append(self.readRegistersBytes(12820, 64, 36))
+        _bytes_arr.append(self.readRegistersBytes(15124, 64, 36))
+        _bytes_arr.append(self.readRegistersBytes(17428, 64, 18))
+        return _bytes_arr
+
     def readInitiateAndContact(self):
         subplt = self.readRegisters(17428, 64, 18, "init_and_contact.csv", is_plot=True)
         #if subplt is not None:
