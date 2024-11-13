@@ -11,7 +11,35 @@ import matplotlib.pyplot as plt
 import numpy as np
 import tkinter as tk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from structhelper import StructHelper
+import datetime
+import threading
+from threading import Timer
+from os.path import join, dirname, abspath
+
+class RepeatedTimer(object):
+    def __init__(self, interval, function):
+        self._timer = None
+        self.interval = interval
+        self.function = function
+        #self.args = args
+        #self.kwargs = kwargs
+        self.is_running = False
+        self.start()
+
+    def _run(self):
+        self.is_running = False
+        self.start()
+        self.function()
+
+    def start(self):
+        if not self.is_running:
+            self._timer = Timer(self.interval, self._run)
+            self._timer.start()
+            self.is_running = True
+
+    def stop(self):
+        self._timer.cancel()
+        self.is_running = False
 
 class DASH(object):
     def __init__(self, _parent):
@@ -33,6 +61,8 @@ class DASH(object):
         self.upper_frame = tk.Frame(self.charts_frame)
         self.upper_frame.pack(fill="both", expand=True)
         self.canvases = []
+        self._timer = None
+        self.rt = RepeatedTimer(10, self.parent.readAllAndSave)
 
 
     def readAgain(self):
@@ -53,18 +83,35 @@ class DASH(object):
         for canvas in self.canvases:
             canvas.draw()
             canvas.get_tk_widget().pack(side="left", fill="both", expand=True)
+
+    def regularCollectAcq(self):
+        # self._timer = threading.Timer(6.0, self.parent.readAllAndSave).start()
+        self._timer = threading.Timer(8.0, self.regularCollectAcq).start()
+        self.parent.readAllAndSave()
     def show(self):
+        # self.regularCollectAcq()
+        #threading.Timer(15.0, self.regularCollectAcq).start()
         self.root.mainloop()
 
     def on_closing(self):
-        self.root.destroy()
+        try:
+            # self._timer.cancel()
+            self.rt.stop()
+            self.root.destroy()
+        except Exception as e:
+            print(f'{str(e)}')
         print("Root Destroyed")
         exit(0)
 
 class SRVR(object):
     def __init__(self):
+        _fpath = join(dirname(abspath(__file__)), 'config.txt')
+        _ipaddress = self.readIpaddressFromFile(_fpath)
+        self._savepath = self.readPathFromFile(_fpath)
+        print(f'ACQ IP ADDRESS: {_ipaddress}')
         #self.srvr = ModbusServer("localhost", 100, no_block=False)
-        self.clnt = ModbusClient(host='192.168.246.100', port=100, auto_open=False, debug=False)
+        # self.clnt = ModbusClient(host=_ipaddress[:-1], port=100, auto_open=False, debug=False)
+        self.clnt = ModbusClient(host=_ipaddress[:-1], port=100, auto_open=False)
         #self.__address = 8212
         self.__address = 10516
         #self.__address = 17428
@@ -91,6 +138,16 @@ class SRVR(object):
             plot[1].set_ylabel('Y Axis')
             plot[0].canvas.draw()
             plot[0].canvas.flush_events()
+
+    def readIpaddressFromFile(self, _filename):
+        with open(_filename, 'r') as f:
+            lines = f.readlines()
+            return lines[0]
+
+    def readPathFromFile(self, _filename):
+        with open(_filename, 'r') as f:
+            lines = f.readlines()
+            return lines[1]
 
     def twos_comp(self, val, bits):
         """compute the 2's complement of int value val"""
@@ -153,8 +210,9 @@ class SRVR(object):
             self.clnt.close()
             print("Exception " + str(e))
 
-    def readRegister(self, _start_address, is_twoscompl=False, is_plot=False):
-        pass
+    def getFilenameTimeStringFromEpoch(self, epoch:int):
+        strfil = '22-' + datetime.datetime.fromtimestamp(epoch).strftime('%Y%m%d%H%M%S') + '.dat'
+        return strfil
 
     # Wave data coming from ACQ in 16bit format where the Value is +32767 to -32767 . But since our variable is 32 bit
     # wide, it cannot detect Negative values. So by checking the flag is_twoscompl, it also check if the value is greater
@@ -207,11 +265,12 @@ class SRVR(object):
                         csvfile.write("".join(line))
             self.clnt.close()
             self.voltwave.clear()
-            if is_plot:
-                self.plotme2(self.subplots[plot_index], self.subplot_lines[plot_index], xaxis_arr, yaxis_arr, title=_filename)
-                return 1
-            else:
-                return self.single_reg
+            # if is_plot:
+            #     self.plotme2(self.subplots[plot_index], self.subplot_lines[plot_index], xaxis_arr, yaxis_arr, title=_filename)
+            #     return 1
+            # else:
+            #     return self.single_reg
+            return self.single_reg
         except Exception as e:
             #self.srvr.stop()
             self.clnt.close()
@@ -232,9 +291,11 @@ class SRVR(object):
                 for reg in regs_1:
                     bytes_read = reg.to_bytes(2, "little")
                     _bytes.extend(bytes_read)
+                _start_address = _start_address + _block_size
                 dx = dx + 1
                 if dx == _number_of_blocks:
                     break
+            self.clnt.close()
             return _bytes
         except Exception as e:
             self.clnt.close()
@@ -244,8 +305,9 @@ class SRVR(object):
     def readRecordCount(self):
         if self.clnt.open():
             reg = self.readRegisters(1028, 1, 0, "NA")
-            print(" STATUS = ", str(reg))
-            print(" STATUS = ", str(hex(reg)))
+            print(" STATUS       = ", str(reg))
+            print(" STATUS       = ", str(hex(reg)))
+            print(f" RECORD COUNT = {str((0x00FF & reg))}")
             self.clnt.close()
             self.voltwave.clear()
             return (0x00FF & reg)
@@ -264,18 +326,30 @@ class SRVR(object):
                 lidx = 1
 
     def readAllAndSave(self):
-        fullBytesArr = self.readFullBytes()
-        tsize = 0
-        for _bytes in fullBytesArr:
-            tsize = tsize + len(_bytes)
-        print(f'Total Size : {tsize}')
+        if(self.readRecordCount() > 0):
+            fullBytesArr = self.readFullBytes()
+            tsize = 0
+            for _bytes in fullBytesArr:
+                tsize = tsize + len(_bytes)
+            epoc_time = int.from_bytes(fullBytesArr[0][4:7], "little")
+            print(f'Total Size : {tsize}')
+            print(f'EPOC : {epoc_time}')
+            print(f'Filename: {self.getFilenameTimeStringFromEpoch(epoc_time)}')
+            #_filename = 'C:\\test1\\' + self.getFilenameTimeStringFromEpoch(epoc_time)
+            _filename = self._savepath[:-1] + self.getFilenameTimeStringFromEpoch(epoc_time)
+            print(f'SAVE FILE FULL PATH: {_filename}')
+            with open(_filename, "wb") as binfile:
+                for _bytes in fullBytesArr:
+                    binfile.write(_bytes)
 
     def readFullBytes(self):
         _bytes_arr = []
+        self.readRecordCount()
         _bytes_arr.append(self.readRegistersBytes(1200, 34, 1))
         _bytes_arr.append(self.readRegistersBytes(1300, 64, 36))
         _bytes_arr.append(self.readRegistersBytes(3604, 64, 36))
         _bytes_arr.append(self.readRegistersBytes(5908, 64, 36))
+        self.readRegistersBytes(8212, 64, 36)
         _bytes_arr.append(self.readRegistersBytes(10516, 64, 36))
         _bytes_arr.append(self.readRegistersBytes(12820, 64, 36))
         _bytes_arr.append(self.readRegistersBytes(15124, 64, 36))
@@ -333,7 +407,7 @@ class SRVR(object):
             self.readTripCoil2()
             self.readCloseCoil()
             self.readVoltWave()
-            self.readInitContact()
+            #self.readInitContact()
             self.readPhaseACurr()
             self.readPhaseBCurr()
             self.readPhaseCCurr()
