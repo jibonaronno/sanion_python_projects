@@ -3,7 +3,6 @@
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
-
 from pyModbusTCP.server import ModbusServer, DataBank
 from pyModbusTCP.client import ModbusClient
 from pprint import pprint
@@ -46,7 +45,8 @@ class DASH(object):
         self.parent = _parent
         self.root = tk.Tk()
         self.root.title("DASH")
-        self.root.state("zoomed")
+        # self.root.state("zoomed")
+        self.root.geometry("400x400")
         self.side_frame = tk.Frame(self.root)  #,yscrollcommand=scrollbar.set)
         self.side_frame.pack(side="left", fill="y")
         self.label = tk.Label(self.side_frame, text="Dashboard", bg="#4C2A85", fg="#FFF", font=25)
@@ -62,7 +62,7 @@ class DASH(object):
         self.upper_frame.pack(fill="both", expand=True)
         self.canvases = []
         self._timer = None
-        self.rt = RepeatedTimer(10, self.parent.readAllAndSave)
+        # self.rt = RepeatedTimer(10, self.parent.readAllAndSave)
 
 
     def readAgain(self):
@@ -84,13 +84,11 @@ class DASH(object):
             canvas.draw()
             canvas.get_tk_widget().pack(side="left", fill="both", expand=True)
 
-    def regularCollectAcq(self):
+    # def regularCollectAcq(self):
         # self._timer = threading.Timer(6.0, self.parent.readAllAndSave).start()
-        self._timer = threading.Timer(8.0, self.regularCollectAcq).start()
-        self.parent.readAllAndSave()
+        # self._timer = threading.Timer(8.0, self.regularCollectAcq).start()
+        # self.parent.readAllAndSave()
     def show(self):
-        # self.regularCollectAcq()
-        #threading.Timer(15.0, self.regularCollectAcq).start()
         self.root.mainloop()
 
     def on_closing(self):
@@ -326,21 +324,24 @@ class SRVR(object):
                 lidx = 1
 
     def readAllAndSave(self):
-        if(self.readRecordCount() > 0):
-            fullBytesArr = self.readFullBytes()
-            tsize = 0
-            for _bytes in fullBytesArr:
-                tsize = tsize + len(_bytes)
-            epoc_time = int.from_bytes(fullBytesArr[0][4:7], "little")
-            print(f'Total Size : {tsize}')
-            print(f'EPOC : {epoc_time}')
-            print(f'Filename: {self.getFilenameTimeStringFromEpoch(epoc_time)}')
-            #_filename = 'C:\\test1\\' + self.getFilenameTimeStringFromEpoch(epoc_time)
-            _filename = self._savepath[:-1] + self.getFilenameTimeStringFromEpoch(epoc_time)
-            print(f'SAVE FILE FULL PATH: {_filename}')
-            with open(_filename, "wb") as binfile:
+        try:
+            if(self.readRecordCount() > 0):
+                fullBytesArr = self.readFullBytes()
+                tsize = 0
                 for _bytes in fullBytesArr:
-                    binfile.write(_bytes)
+                    tsize = tsize + len(_bytes)
+                epoc_time = int.from_bytes(fullBytesArr[0][4:7], "little")
+                print(f'Total Size : {tsize}')
+                print(f'EPOC : {epoc_time}')
+                print(f'Filename: {self.getFilenameTimeStringFromEpoch(epoc_time)}')
+                #_filename = 'C:\\test1\\' + self.getFilenameTimeStringFromEpoch(epoc_time)
+                _filename = self._savepath[:-1] + self.getFilenameTimeStringFromEpoch(epoc_time)
+                print(f'SAVE FILE FULL PATH: {_filename}')
+                with open(_filename, "wb") as binfile:
+                    for _bytes in fullBytesArr:
+                        binfile.write(_bytes)
+        except Exception as e:
+            print(f"Try Again : {str(e)}")
 
     def readFullBytes(self):
         _bytes_arr = []
