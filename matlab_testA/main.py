@@ -11,17 +11,21 @@ def func_conv(kernel, input_array):
     cum_conv = np.zeros(input_len)
 
     kernel_indexes = []
+    sum_arrays = []
     #F = 0
     for k in range(input_len):
         F = 0
         kernel_loop_count = 0
         kernel_indexes.clear()
+        sum_arrays.clear()
         for j in range(max(0, k + 1 - input_len), min(k + 1, kernel_len)):
             F += kernel[j] * input_array[k - j]
             kernel_loop_count += 1
+            sum_arrays.append((kernel[j], input_array[k - j]))
             kernel_indexes.append((max(0, k + 1 - input_len), min(k + 1, kernel_len), (k + 1 - input_len), ('j=',j)))
         cum_conv[k] = F / min(k + 1, kernel_len)
-        print(f'kernel_loop_count = {kernel_loop_count} - k={k} {kernel_indexes}')
+        # print(f'kernel_loop_count = {kernel_loop_count} - k={k} {kernel_indexes} F={F} cum_conv[k]={cum_conv[k]}')
+        print(f'kernel_loop_count = {kernel_loop_count} - k={k} sum_arrays=SUM({sum_arrays})  F={F} cum_conv[k]={cum_conv[k]}')
         # print((min(k+1, m)))
     #print(F)
     return cum_conv
