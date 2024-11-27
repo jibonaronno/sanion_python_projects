@@ -40,8 +40,8 @@ def convolve(input_array, kernel):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    input_array = [1, 2, 3, 4, 5, 6, 7, 8, 8, 1, 4, 9]
-    kernel = [1, 0, -1]
+    input_array = [1, 10, 2, 5, 9, 100, 55, 77, 0, -5, 4, 9]
+    kernel = [-1, 0, 1]
     #print(convolve(input_array, kernel))
     result = func_conv(kernel, input_array)
     print(f'{len(result)} = \n')
