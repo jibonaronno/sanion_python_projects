@@ -30,6 +30,7 @@ def func_conv(kernel, input_array):
     #print(F)
     return cum_conv
 
+# Following function is an example of convolution from ChatGPt
 def convolve(input_array, kernel):
     kernel = kernel[::-1]  # Reverse kernel for convolution
     output = []
@@ -38,7 +39,7 @@ def convolve(input_array, kernel):
         output.append(result)
     return output
 
-# Press the green button in the gutter to run the script.
+
 if __name__ == '__main__':
     input_array = [1, 10, 2, 5, 9, 100, 55, 77, 0, -5, 4, 9]
     kernel = [-1, 0, 1]
