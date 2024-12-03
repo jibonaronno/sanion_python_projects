@@ -116,6 +116,7 @@ Cum_conv = -1 * Cum_conv
 
 start_time = time.time()
 C4x_uv = func_cum4uni_vertical(raw)
+print(f'C4x_uv length = {len(C4x_uv)}')
 Cum_conv = func_conv(C4x_uv, raw)
 Cum_conv = -1 * Cum_conv
 
