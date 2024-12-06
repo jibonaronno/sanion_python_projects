@@ -6,35 +6,6 @@ from binaryfilereader import BinaryFileReader
 import time
 from os.path import join, dirname, abspath
 
-'''
-def func_conv(u, v):
-    m = len(u)
-    n = len(v)
-    Cum_conv = np.zeros(n)
-    for k in range(n):
-        F = 0
-        for j in range(max(0, k - n + 1), min(k + 1, m)):
-            F += u[j] * v[k - j]
-        Cum_conv[k] = F / min(k + 1, m)
-    return Cum_conv
-
-def func_cum4uni_vertical(x):
-    x = x - np.mean(x)
-    N = len(x)
-    C4xx = np.zeros(N)
-    Rxx = np.zeros(N)
-    for m in range(N):
-        F = 0
-        F1 = 0
-        for k in range(N - m):
-            F += x[k] * x[k] * x[k] * x[k + m]
-            F1 += x[k] * x[k + m]
-        C4xx[m] = F / (N - m)
-        Rxx[m] = F1 / (N - m)
-    C4x_uv = C4xx - 3 * Rxx * Rxx[0]
-    return C4x_uv
-'''
-
 def func_conv(u, v):
     """
     Vectorized version of func_conv.
@@ -49,7 +20,6 @@ def func_conv(u, v):
     Cum_conv = conv_uv[:n] / denominator
     return Cum_conv
 
-
 def func_cum4uni_vertical(x):
     """
     Vectorized version of func_cum4uni_vertical.
@@ -60,19 +30,18 @@ def func_cum4uni_vertical(x):
     # Autocorrelation of x
     Rxx_full = np.correlate(x, x, mode='full')
     # Cross-correlation of x^3 with x
-    C4xx_full = np.correlate(x ** 3, x, mode='full')
-
+    C4xx_full = np.correlate(x**3, x, mode='full')
+    
     # For m in [0, N-1], we want Rxx(m) = Rxx_full[N-1+m] / (N-m)
     # and C4xx(m) = C4xx_full[N-1+m] / (N-m)
     m_idx = np.arange(N) + (N - 1)
     denom = N - np.arange(N)  # (N-m)
-
+    
     Rxx = Rxx_full[m_idx] / denom
     C4xx = C4xx_full[m_idx] / denom
-
+    
     C4x_uv = C4xx - 3 * Rxx * Rxx[0]
     return C4x_uv
-
 # Main script
 Fs = 1000  # Sample frequency
 fc = 50    # Carrier frequency
@@ -185,15 +154,18 @@ mod_atn = 2 * atn * atn  # envelope detection
 
 # Design the filter
 #b = remez(21, [0, 0.03, 0.1, 1], [1, 0], fs=2)
-b = remez(21, [0, 0.03, 0.1, 1], [1, 0], fs=2)
+b = remez(55, [0, 0.1, 0.3, 1], [1, 0], fs=2)
 
 # Apply the filter
 sal = lfilter(b, 1, mod_atn)
 sal = np.sqrt(np.abs(sal))
 sal[sal == 0] = np.finfo(float).eps  # Avoid division by zero
-atn_final = atn / sal
+atn_final = atn/ (sal/100)
 atn_final = atn_final[:raw_len]
-
+# atn_final=-atn_final
+window_size = 4 # Larger window -> smoother signal, but more smoothing delay.
+window = np.ones(window_size) / window_size
+atn_final= np.convolve(atn_final, window, mode='same')
 elapsed_time = time.time() - start_time
 
 
