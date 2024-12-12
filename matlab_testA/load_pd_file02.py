@@ -25,7 +25,7 @@ def func_cum4uni_vertical(x):
     Vectorized version of func_cum4uni_vertical.
     Uses cross-correlation and autocorrelation via np.correlate.
     """
-    x = x - np.mean(x)
+    x = x - np.mean(x) # mean/average of array elements along given axis.
     N = len(x)
     # Autocorrelation of x
     Rxx_full = np.correlate(x, x, mode='full')
@@ -58,7 +58,7 @@ xt = np.cos(2 * np.pi * fc * t + np.pi / 4)
 bin_file_reader = BinaryFileReader()
 bin_file_reader.readFil(join(dirname(abspath(__file__)), '04_00_20241022043555.dat'))
 raw = bin_file_reader.getArray()
-raw_len = len(raw)
+raw_len = len(raw)_file
 raw_x_axis_array = np.arange(0, raw_len) * 0.1302
 print(f'*** raw bin size = {len(raw)}')
 nfft = 2 ** int(np.ceil(np.log2(raw_len)))

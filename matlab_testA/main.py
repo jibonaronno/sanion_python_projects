@@ -39,12 +39,27 @@ def convolve(input_array, kernel):
         output.append(result)
     return output
 
+def func_conv_vect(u, v):
+    """
+    Vectorized version of func_conv.
+    """
+    m = len(u)
+    n = len(v)
+    conv_uv = np.convolve(u, v)  # length = m+n-1
+    # We only need the first n points.
+    # Original code divides by min(k+1, m) for each k.
+    idxs = np.arange(n) # Ex: np.arrange(10) returns [0,1,2,3,4,5,6,7,8,9]
+    denominator = np.where(idxs < m, idxs + 1, m) # Ex: if idsx[i] < m : return idxs[i]+1 else return m # Here m is a constant value
+    print(f'denominator = {denominator}')
+    Cum_conv = conv_uv[:n] / denominator
+    return Cum_conv
 
 if __name__ == '__main__':
     input_array = [1, 10, 2, 5, 9, 100, 55, 77, 0, -5, 4, 9]
     kernel = [-1, 0, 1]
     #print(convolve(input_array, kernel))
-    result = func_conv(kernel, input_array)
+    # result = func_conv(kernel, input_array)
+    result = func_conv_vect(kernel, input_array)
     print(f'{len(result)} = \n')
     print(result)
 
