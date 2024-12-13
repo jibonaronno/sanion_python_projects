@@ -57,7 +57,7 @@ xt = np.cos(2 * np.pi * fc * t + np.pi / 4)
 
 bin_file_reader = BinaryFileReader()
 bin_file_reader.readFil(join(dirname(abspath(__file__)), '04_00_20241022043555.dat'))
-raw = bin_file_reader.getArray()
+raw = bin_file_reader.getArray(1,1500)
 raw_len = len(raw)
 raw_x_axis_array = np.arange(0, raw_len) * 0.1302
 print(f'*** raw bin size = {len(raw)}')
@@ -167,7 +167,6 @@ window_size = 4 # Larger window -> smoother signal, but more smoothing delay.
 window = np.ones(window_size) / window_size
 atn_final= np.convolve(atn_final, window, mode='same')
 elapsed_time = time.time() - start_time
-
 
 plt.figure()
 plt.plot(raw_x_axis_array, atn_final, 'r')

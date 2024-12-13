@@ -31,7 +31,12 @@ class BinaryFileReader(object):
         print(integers)
         pass
 
-    def getArray(self):
+    def getArray(self, array_start=-1, array_end=-1):
+        # barray = self.ficontent[0:]
+        if array_end > 0 and array_start > 0 and array_end > array_start:
+            barray = self.ficontent[array_start:array_end]
+            integers = unpack('<' + 'b' * (array_end - array_start), barray)  # '<' indicates the source data is Little Endian
+            return integers                                    # 'b' asks for signed 8bit integer
         barray = self.ficontent[0:]
         integers = unpack('<' + 'b' * (len(barray)), barray)    # '<' indicates the source data is Little Endian
                                                                 # 'b' asks for signed 8bit integer
