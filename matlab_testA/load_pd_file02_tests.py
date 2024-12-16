@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.fft import fft, ifft
 from scipy.signal import remez, lfilter
+from scipy.signal import find_peaks
 from binaryfilereader import BinaryFileReader
 import time
 from os.path import join, dirname, abspath
@@ -138,15 +139,21 @@ ajuste[ajuste < 0] = 1
 '''
 
 conv_fft = fft(Cum_conv, nfft) / raw_len
-ajuste = ((16 / 3) * np.abs(conv_fft)) ** (1 / 5)  # amplitude adjustment
-ajuste_mean = np.mean(ajuste)
-ajuste = ajuste - ajuste_mean
-ajuste[ajuste < 0] = 1
-
+ajuste = ((16 / 3) * np.abs(conv_fft)) ** (1 / 32) # (1 / 5)  # amplitude adjustment
+# ajuste_mean = np.mean(ajuste) # Returns a single mean value of the array.
+# ajuste = ajuste - ajuste_mean # Centers the array
+ajuste[ajuste < 0] = 1 # replace all negative values in the array with 1
 
 nuevo_num = ajuste * np.exp(1j * np.angle(conv_fft))
+'''
+From chatgpt reference This expression converts the conv_fft to an array of complex numbers.
+Because each FFT value of a time series signal represent phase properties. Numpy can extract 
+angle of each FFT value. Then Multiply each value with 1j converts each value to complex numbers.
+So it creates an array of unit vectors based on the phase angle of each FFT value on the 
+complex plane. Then Multiplies with ajuste array to create the array of complex numbers.
+'''
 
-ajuste_ifft = ifft(nuevo_num, nfft) * raw_len
+ajuste_ifft = ifft(nuevo_num, nfft) * raw_len  # Inverse FFT
 atn = np.real(ajuste_ifft)
 atn = atn[:raw_len]
 
@@ -160,8 +167,21 @@ b = remez(55, [0, 0.1, 0.3, 1], [1, 0], fs=2)
 sal = lfilter(b, 1, mod_atn)
 sal = np.sqrt(np.abs(sal))
 sal[sal == 0] = np.finfo(float).eps  # Avoid division by zero
-atn_final = atn/ (sal/100)
+
+atn_final = atn/ (sal/10) #(sal/100)
+
 atn_final = atn_final[:raw_len]
+atn_final[:100] = 0
+atn_final[atn_final > 30] = 0
+
+
+peaks, _ = find_peaks(atn_final)  # Returns indices of peaks
+peak_values = atn_final[peaks]
+average_peak = np.mean(peak_values)
+peak_max = np.max(atn_final[peaks])
+
+atn_final_mean = np.mean(atn_final)
+atn_final = atn_final - peak_max
 # atn_final=-atn_final
 window_size = 4 # Larger window -> smoother signal, but more smoothing delay.
 window = np.ones(window_size) / window_size

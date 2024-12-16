@@ -141,7 +141,7 @@ conv_fft = fft(Cum_conv, nfft) / raw_len
 ajuste = ((16 / 3) * np.abs(conv_fft)) ** (1 / 5)  # amplitude adjustment
 ajuste_mean = np.mean(ajuste)
 ajuste = ajuste - ajuste_mean
-ajuste[ajuste < 0] = 1
+ajuste[ajuste < 0] = 1 # replace all negative values in the array with 1
 
 
 nuevo_num = ajuste * np.exp(1j * np.angle(conv_fft))
