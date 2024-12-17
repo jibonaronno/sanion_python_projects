@@ -6,6 +6,7 @@ from scipy.signal import find_peaks
 from binaryfilereader import BinaryFileReader
 import time
 from os.path import join, dirname, abspath
+from sklearn.preprocessing import MinMaxScaler
 
 def func_conv(u, v):
     """
@@ -44,7 +45,7 @@ def func_cum4uni_vertical(x):
     C4x_uv = C4xx - 3 * Rxx * Rxx[0]
     return C4x_uv
 # Main script
-Fs = 1000  # Sample frequency
+Fs = 2000  # Sample frequency
 fc = 50    # Carrier frequency
 T = 1 / Fs # Sample period
 # KB = 1024
@@ -60,6 +61,14 @@ bin_file_reader = BinaryFileReader()
 bin_file_reader.readFil(join(dirname(abspath(__file__)), '04_00_20241022043555.dat'))
 raw = bin_file_reader.getArray(1,1500)
 raw_len = len(raw)
+#raw= np.array(raw)[0:] * -1
+#raw=np.clip(raw,0, 65)
+#raw=raw *-1
+scaler = MinMaxScaler(feature_range=(0, 1))
+
+#raw = scaler.fit_transform(np.reshape(raw, newshape=(-1, 1)))
+#raw=np.reshape(raw,newshape=(raw_len,-1))
+#raw=np.reshape(raw,newshape=(raw_len))
 raw_x_axis_array = np.arange(0, raw_len) * 0.1302
 print(f'*** raw bin size = {len(raw)}')
 nfft = 2 ** int(np.ceil(np.log2(raw_len)))
@@ -139,10 +148,10 @@ ajuste[ajuste < 0] = 1
 '''
 
 conv_fft = fft(Cum_conv, nfft) / raw_len
-ajuste = ((16 / 3) * np.abs(conv_fft)) ** (1 / 32) # (1 / 5)  # amplitude adjustment
+#ajuste = ((16 / 3) * np.abs(conv_fft)) ** (1 / 32) # (1 / 5)  # amplitude adjustment
 # ajuste_mean = np.mean(ajuste) # Returns a single mean value of the array.
 # ajuste = ajuste - ajuste_mean # Centers the array
-ajuste[ajuste < 0] = 1 # replace all negative values in the array with 1
+#ajuste[ajuste < 0] = 1 # replace all negative values in the array with 1
 
 nuevo_num = conv_fft * np.exp(1j * np.angle(conv_fft))
 '''
@@ -161,20 +170,29 @@ mod_atn = 2 * atn * atn  # envelope detection
 
 # Design the filter
 #b = remez(21, [0, 0.03, 0.1, 1], [1, 0], fs=2)
-b = remez(55, [0, 0.1, 0.3, 1], [1, 0], fs=2)
-
+b = remez(30, [0, 0.04, 0.2, 1], [0.1,0], fs=2)
+#b= remez(100,[0,0.01,0.1,1],[1,0],fs=3)
 # Apply the filter
 sal = lfilter(b, 1, mod_atn)
 sal = np.sqrt(np.abs(sal))
 sal[sal == 0] = np.finfo(float).eps  # Avoid division by zero
 
-atn_final = atn/ (sal/10) #(sal/100)
+atn[:100] = 0
+atn_final = atn / (sal)  # (sal/100)
+#atn_final= np.clip(atn_final,0,1)
+#atn_final=atn_final[* -65
+#atn_final=atn_final*-1
+#print(atn_final)
 
+#atn_final = -np.abs(atn_final) * 65#atn_final =atn_final[0:] *-1000
+#atn_final=scaler.inverse_transform(np.reshape(atn_final,newshape=(-1,1)))
+#atn_final=np.reshape(atn_final,newshape=(raw_len))
 atn_final = atn_final[:raw_len]
-atn_final[:100] = 0
-atn_final[atn_final > 30] = 0
+atn_final= atn_final[0:] * -1
+# atn_final[:100] = 0
+# atn_final[atn_final > 30] = 0
 
-
+'''
 peaks, _ = find_peaks(atn_final)  # Returns indices of peaks
 peak_values = atn_final[peaks]
 average_peak = np.mean(peak_values)
@@ -182,11 +200,15 @@ peak_max = np.max(atn_final[peaks])
 
 atn_final_mean = np.mean(atn_final)
 atn_final = atn_final - peak_max
+'''
+
 # atn_final=-atn_final
+'''
 window_size = 4 # Larger window -> smoother signal, but more smoothing delay.
 window = np.ones(window_size) / window_size
 atn_final= np.convolve(atn_final, window, mode='same')
 elapsed_time = time.time() - start_time
+'''
 
 plt.figure()
 plt.plot(raw_x_axis_array, atn_final, 'r')
