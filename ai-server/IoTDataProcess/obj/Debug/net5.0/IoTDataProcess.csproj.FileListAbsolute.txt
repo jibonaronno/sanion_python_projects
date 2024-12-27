@@ -1,0 +1,66 @@
+C:\Projects\ProcessingFileTest\IoTDataProcess\bin\Debug\net5.0\IoTDataProcess.exe
+C:\Projects\ProcessingFileTest\IoTDataProcess\bin\Debug\net5.0\IoTDataProcess.deps.json
+C:\Projects\ProcessingFileTest\IoTDataProcess\bin\Debug\net5.0\IoTDataProcess.runtimeconfig.json
+C:\Projects\ProcessingFileTest\IoTDataProcess\bin\Debug\net5.0\IoTDataProcess.runtimeconfig.dev.json
+C:\Projects\ProcessingFileTest\IoTDataProcess\bin\Debug\net5.0\IoTDataProcess.dll
+C:\Projects\ProcessingFileTest\IoTDataProcess\bin\Debug\net5.0\ref\IoTDataProcess.dll
+C:\Projects\ProcessingFileTest\IoTDataProcess\bin\Debug\net5.0\IoTDataProcess.pdb
+C:\Projects\ProcessingFileTest\IoTDataProcess\bin\Debug\net5.0\RabbitMQ.Client.dll
+C:\Projects\ProcessingFileTest\IoTDataProcess\bin\Debug\net5.0\System.Threading.Channels.dll
+C:\Projects\ProcessingFileTest\IoTDataProcess\obj\Debug\net5.0\IoTDataProcess.csproj.AssemblyReference.cache
+C:\Projects\ProcessingFileTest\IoTDataProcess\obj\Debug\net5.0\IoTDataProcess.GeneratedMSBuildEditorConfig.editorconfig
+C:\Projects\ProcessingFileTest\IoTDataProcess\obj\Debug\net5.0\IoTDataProcess.AssemblyInfoInputs.cache
+C:\Projects\ProcessingFileTest\IoTDataProcess\obj\Debug\net5.0\IoTDataProcess.AssemblyInfo.cs
+C:\Projects\ProcessingFileTest\IoTDataProcess\obj\Debug\net5.0\IoTDataProcess.csproj.CoreCompileInputs.cache
+C:\Projects\ProcessingFileTest\IoTDataProcess\obj\Debug\net5.0\IoTDataProcess.csproj.CopyComplete
+C:\Projects\ProcessingFileTest\IoTDataProcess\obj\Debug\net5.0\IoTDataProcess.dll
+C:\Projects\ProcessingFileTest\IoTDataProcess\obj\Debug\net5.0\ref\IoTDataProcess.dll
+C:\Projects\ProcessingFileTest\IoTDataProcess\obj\Debug\net5.0\IoTDataProcess.pdb
+C:\Projects\ProcessingFileTest\IoTDataProcess\obj\Debug\net5.0\IoTDataProcess.genruntimeconfig.cache
+D:\AI Project\IoTDataProcess\bin\Debug\net5.0\IoTDataProcess.exe
+D:\AI Project\IoTDataProcess\bin\Debug\net5.0\IoTDataProcess.deps.json
+D:\AI Project\IoTDataProcess\bin\Debug\net5.0\IoTDataProcess.runtimeconfig.json
+D:\AI Project\IoTDataProcess\bin\Debug\net5.0\IoTDataProcess.runtimeconfig.dev.json
+D:\AI Project\IoTDataProcess\bin\Debug\net5.0\IoTDataProcess.dll
+D:\AI Project\IoTDataProcess\bin\Debug\net5.0\ref\IoTDataProcess.dll
+D:\AI Project\IoTDataProcess\bin\Debug\net5.0\IoTDataProcess.pdb
+D:\AI Project\IoTDataProcess\bin\Debug\net5.0\RabbitMQ.Client.dll
+D:\AI Project\IoTDataProcess\bin\Debug\net5.0\System.Threading.Channels.dll
+D:\AI Project\IoTDataProcess\obj\Debug\net5.0\IoTDataProcess.csproj.AssemblyReference.cache
+D:\AI Project\IoTDataProcess\obj\Debug\net5.0\IoTDataProcess.GeneratedMSBuildEditorConfig.editorconfig
+D:\AI Project\IoTDataProcess\obj\Debug\net5.0\IoTDataProcess.AssemblyInfoInputs.cache
+D:\AI Project\IoTDataProcess\obj\Debug\net5.0\IoTDataProcess.AssemblyInfo.cs
+D:\AI Project\IoTDataProcess\obj\Debug\net5.0\IoTDataProcess.csproj.CoreCompileInputs.cache
+D:\AI Project\IoTDataProcess\obj\Debug\net5.0\IoTDataProcess.csproj.CopyComplete
+D:\AI Project\IoTDataProcess\obj\Debug\net5.0\IoTDataProcess.dll
+D:\AI Project\IoTDataProcess\obj\Debug\net5.0\ref\IoTDataProcess.dll
+D:\AI Project\IoTDataProcess\obj\Debug\net5.0\IoTDataProcess.pdb
+D:\AI Project\IoTDataProcess\obj\Debug\net5.0\IoTDataProcess.genruntimeconfig.cache
+D:\ai-server\IoTDataProcess\bin\Debug\net5.0\IoTDataProcess.exe
+D:\ai-server\IoTDataProcess\bin\Debug\net5.0\IoTDataProcess.deps.json
+D:\ai-server\IoTDataProcess\bin\Debug\net5.0\IoTDataProcess.runtimeconfig.json
+D:\ai-server\IoTDataProcess\bin\Debug\net5.0\IoTDataProcess.runtimeconfig.dev.json
+D:\ai-server\IoTDataProcess\bin\Debug\net5.0\IoTDataProcess.dll
+D:\ai-server\IoTDataProcess\bin\Debug\net5.0\ref\IoTDataProcess.dll
+D:\ai-server\IoTDataProcess\bin\Debug\net5.0\IoTDataProcess.pdb
+D:\ai-server\IoTDataProcess\bin\Debug\net5.0\RabbitMQ.Client.dll
+D:\ai-server\IoTDataProcess\bin\Debug\net5.0\System.Threading.Channels.dll
+D:\ai-server\IoTDataProcess\obj\Debug\net5.0\IoTDataProcess.GeneratedMSBuildEditorConfig.editorconfig
+D:\ai-server\IoTDataProcess\obj\Debug\net5.0\IoTDataProcess.AssemblyInfoInputs.cache
+D:\ai-server\IoTDataProcess\obj\Debug\net5.0\IoTDataProcess.AssemblyInfo.cs
+D:\ai-server\IoTDataProcess\obj\Debug\net5.0\IoTDataProcess.csproj.CoreCompileInputs.cache
+D:\ai-server\IoTDataProcess\obj\Debug\net5.0\IoTDataProcess.csproj.CopyComplete
+D:\ai-server\IoTDataProcess\obj\Debug\net5.0\IoTDataProcess.dll
+D:\ai-server\IoTDataProcess\obj\Debug\net5.0\ref\IoTDataProcess.dll
+D:\ai-server\IoTDataProcess\obj\Debug\net5.0\IoTDataProcess.pdb
+D:\ai-server\IoTDataProcess\obj\Debug\net5.0\IoTDataProcess.genruntimeconfig.cache
+D:\ai-server\IoTDataProcess\bin\Debug\net5.0\Microsoft.Bcl.AsyncInterfaces.dll
+D:\ai-server\IoTDataProcess\bin\Debug\net5.0\Newtonsoft.Json.dll
+D:\ai-server\IoTDataProcess\bin\Debug\net5.0\SocketIO.Core.dll
+D:\ai-server\IoTDataProcess\bin\Debug\net5.0\SocketIO.Serializer.Core.dll
+D:\ai-server\IoTDataProcess\bin\Debug\net5.0\SocketIO.Serializer.SystemTextJson.dll
+D:\ai-server\IoTDataProcess\bin\Debug\net5.0\SocketIOClient.dll
+D:\ai-server\IoTDataProcess\bin\Debug\net5.0\System.Runtime.CompilerServices.Unsafe.dll
+D:\ai-server\IoTDataProcess\bin\Debug\net5.0\System.Text.Encodings.Web.dll
+D:\ai-server\IoTDataProcess\bin\Debug\net5.0\System.Text.Json.dll
+D:\ai-server\IoTDataProcess\obj\Debug\net5.0\IoTDataProcess.csproj.AssemblyReference.cache

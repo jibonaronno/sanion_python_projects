@@ -1,0 +1,12 @@
+2024-12-26 16:51:21,856 - INFO - Created directory for saved models at saved_models
+2024-12-26 16:51:22,785 - INFO - LSTM model loaded from lstm_autoencoder_model_23.pth
+2024-12-26 16:52:15,039 - INFO - Loaded 142 .dat files from: C:/Users/jibon/PycharmProjects/wavegenA_PD_FILTER_GRAPH/PD_TESLA_COPY_A
+2024-12-26 16:52:15,048 - INFO - Loaded new folder: C:/Users/jibon/PycharmProjects/wavegenA_PD_FILTER_GRAPH/PD_TESLA_COPY_A
+2024-12-26 16:52:22,347 - INFO - Loaded file: 04_00_20241022043552.dat
+2024-12-26 16:52:31,159 - INFO - Loaded file: 04_00_20241022043552.dat
+2024-12-26 16:52:31,918 - INFO - Saved processed file: C:/Users/jibon/PycharmProjects/wavegenA_PD_FILTER_GRAPH/PD_TESLA_COPY_A\04_00_20241022043552_kalman_20241226165231917950.dat
+2024-12-26 16:53:33,518 - INFO - Saved processed file: C:/Users/jibon/PycharmProjects/wavegenA_PD_FILTER_GRAPH/PD_TESLA_COPY_A\04_00_20241022043552_kalman_20241226165231917950_lstm_20241226165333517386.dat
+2024-12-26 16:54:48,780 - INFO - Loaded 17591 .dat files from: C:/Users/jibon/PycharmProjects/wavegenA_PD_FILTER_GRAPH/PD_TESLA_OFFICE_OCT_22_24
+2024-12-26 16:54:48,788 - INFO - Loaded new folder: C:/Users/jibon/PycharmProjects/wavegenA_PD_FILTER_GRAPH/PD_TESLA_OFFICE_OCT_22_24
+2024-12-26 16:54:55,072 - INFO - Loaded file: 04_00_20241022043559.dat
+2024-12-26 16:56:12,955 - INFO - No model file selected.
