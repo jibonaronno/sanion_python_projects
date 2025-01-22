@@ -13,7 +13,9 @@ import serial.tools.list_ports as port_list
 
 from mimic import Mimic
 from comparison_chart import CompareChartWidget
+import os
 
+os.environ["XDG_SESSION_TYPE"] = "xcb"
 # _UI5 = join(dirname(abspath(__file__)), 'charttabs.ui')
 _UI_TOP = join(dirname(abspath(__file__)), 'top.ui')
 
