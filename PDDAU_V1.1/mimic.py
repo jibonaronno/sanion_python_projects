@@ -2,13 +2,53 @@
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
+import json
 # from charttab import ChartTab
 #
+
+class RectFromJson(QObject):
+    def __init__(self, qwidget:QWidget):
+        super().__init__()
+        self.widget = qwidget
+        self.rectangles = []
+
+    def loadShapes(self, json_file):
+        try:
+            with open(json_file, 'r') as f:
+                self.rectangles = json.load(f)
+        except Exception as e:
+            print("Error Loading JSON File")
+
+    def paintEvent(self, event):
+        try:
+            painter = QPainter(self.widget)
+            for rect in self.rectangles:
+                x = rect.get("x", 0)
+                y = rect.get("y", 0)
+                width = rect.get("width", 50)
+                height = rect.get("height", 50)
+                color = rect.get("color", "#FFA500")
+
+                pen = QPen(QColor(color))
+                pen.setWidth(12)
+                painter.setPen(pen)
+                painter.drawRect(x, y, width, height)
+
+            pass
+        except Exception as e:
+            print("RectFromJson class paintEvent() Error")
+            print(str(e))
+
 class Mimic(QWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setAcceptDrops(True)
         # self.charts = ChartTab(self)
+        self.rects_json = RectFromJson(self)
+        self.rects_json.loadShapes("rects.json")
+        self.lwidth = 0
+        self.lheight = 0
+        self.img_loaded = False
         self.initUI()
         self.show()
 
@@ -76,9 +116,16 @@ class Mimic(QWidget):
         #qp.drawRect(10, 150, 150, 100)
         #qp.setPen(QColor(Qt.yellow))
         #qp.drawEllipse(100, 50, 100, 50)
-        qp.drawPixmap(20, 10, QPixmap("LU_FRONT_2D.jpg"))
+        pxmp = QPixmap("LU_FRONT_2D.jpg")
+        qp.drawPixmap(20, 10, pxmp)
         qp.drawText(175, 170, "FLOW:" + str(self.meterFlow1))
         qp.drawText(175, 200, " SUM:" + str(self.meterSum1))
+
+        if not self.img_loaded:
+            print(f'Width = {pxmp.width()} Height = {pxmp.height()}')
+            self.img_loaded = True
+
+        self.rects_json.paintEvent(event)
 
         # qp.drawPixmap(480, 10, QPixmap("meter.jpg"))
         # qp.drawText(635, 170, "FLOW:" + str(self.meterFlow2))
