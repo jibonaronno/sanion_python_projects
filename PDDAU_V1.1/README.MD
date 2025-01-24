@@ -1,13 +1,13 @@
-# WAVEGEN Raw Data and Filter Data Comparison
+# PDDAU_V1.1 Virtual PDDAU Python Implementation
 
 ... <br>
 ... <br>
 
-## This Project is derived from PD Data Filter Graph from Flowmeter_PD_FILTER_GRAPH and wavegenA_PD_FILTER_GRAPH <br>
+## Act as a virtual PDDAU over local network.
 
 # Requirement
-PD data analysis in graph before filter and after filter. 
-This task will do the kalman filter for now. Later we can apply more advanced filters.
+Listen to port 5000 on a PDDAU compatible TCP server. After connection wait for 
+commands. 
 
 # Research and Analysis
 Tesla Partial Discharge Applied to Microwave antenna tuned around 6GHz.

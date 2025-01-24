@@ -24,11 +24,12 @@ class MainWindow(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
         self.widget = uic.loadUi(_UI_TOP, self)
-        self.mimic = Mimic()
+        self.mimic = Mimic(self.customa)
         # verticalLayout_4 = QVBoxLayout()
-        self.verticalLayout_4.addWidget(self.mimic)
+        # self.verticalLayout_4.addWidget(self.mimic)
         self.comparison_chart = None
         self.UiComponents()
+        print(self.verticalLayout_4.children())
         self.show()
 
     def UiComponents(self):
@@ -48,6 +49,8 @@ class MainWindow(QMainWindow):
         self.comparison_chart.showNormal()
 
         # self.mimic.showNormal()
+
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

@@ -1,4 +1,10 @@
 #!/usr/bin/python3
+
+'''
+There is a major issue with Layout and this custom widget class. Some changes in the layout would
+cause this custom widget not drawn on the parent window.
+'''
+
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
@@ -8,7 +14,7 @@ import json
 
 class RectFromJson(QObject):
     def __init__(self, qwidget:QWidget):
-        super().__init__()
+        super().__init__(qwidget)
         self.widget = qwidget
         self.rectangles = []
 
@@ -40,9 +46,9 @@ class RectFromJson(QObject):
             print(str(e))
 
 class Mimic(QWidget):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.setAcceptDrops(True)
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        # self.setAcceptDrops(True)
         # self.charts = ChartTab(self)
         self.rects_json = RectFromJson(self)
         self.rects_json.loadShapes("rects.json")
@@ -50,7 +56,8 @@ class Mimic(QWidget):
         self.lheight = 0
         self.img_loaded = False
         self.initUI()
-        self.show()
+        # self.show()
+        self.showNormal()
 
     def AppendFlow1(self, data=0):
         pass
@@ -74,7 +81,9 @@ class Mimic(QWidget):
 
     def initUI(self):
         self.text = "hello world"
-        self.setGeometry(0, 0, 1500, 1200)
+        # self.setGeometry(0, 0, 1500, 1200)
+        self.setMinimumWidth(1100)
+        self.setMinimumHeight(450)
         # self.charts.setGeometry(10, 400, 1400, 500)
         # self.charts.show()
 
