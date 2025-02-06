@@ -3,6 +3,7 @@
 import sys
 from os.path import join, dirname, abspath
 from qtpy import uic
+from qtpy.QtCore import Slot
 from PyQt5.QtWidgets import *
 from pyqtgraph import PlotWidget
 import qtmodern.styles
@@ -14,10 +15,29 @@ import serial.tools.list_ports as port_list
 from mimic import Mimic
 from comparison_chart import CompareChartWidget
 import os
+import json
 
 os.environ["XDG_SESSION_TYPE"] = "xcb"
 # _UI5 = join(dirname(abspath(__file__)), 'charttabs.ui')
 _UI_TOP = join(dirname(abspath(__file__)), 'top.ui')
+
+class Configs(object):
+    def __init__(self):
+        super().__init__()
+        self.settings = None
+        self.local_ip = ""
+        self.local_port = ""
+        self.remote_ip = ""
+        self.remote_port = ""
+
+    def loadJson(self, json_file):
+        try:
+            with open(json_file, 'r') as f:
+                self.settings = json.load(f)
+                self.local_ip = self.settings.get("local_ip", "")
+                self.local_port = self.settings.get("local_port", "")
+        except Exception as e:
+            print(f"Error Loading JSON File main.py : {str(e)}")
 
 class MainWindow(QMainWindow):
 
@@ -29,7 +49,15 @@ class MainWindow(QMainWindow):
         # self.verticalLayout_4.addWidget(self.mimic)
         self.comparison_chart = None
         self.UiComponents()
-        print(self.verticalLayout_4.children())
+        self.configs = Configs()
+        self.configs.loadJson("settings.json")
+        try:
+            self.qlist.addItem('Local IP : ' + self.configs.local_ip)
+            self.qlist.addItem('Local Port : ' + self.configs.local_port)
+            self.lineEdit.setText(self.configs.local_ip)
+        except Exception as e:
+            print(f'Error main.py : {str(e)}')
+        # print(self.verticalLayout_4.children())
         self.show()
 
     def UiComponents(self):
@@ -47,10 +75,11 @@ class MainWindow(QMainWindow):
         foldername = QFileDialog.getExistingDirectory(self, "Select Folder", location)
         self.comparison_chart = CompareChartWidget(foldername)
         self.comparison_chart.showNormal()
-
         # self.mimic.showNormal()
 
-
+    @Slot()
+    def on_btnInit_clicked(self):
+        pass
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

@@ -89,12 +89,12 @@ class Mimic(QWidget):
 
 
         self.setWindowTitle('Draw Demo')
-        self.meterFlow1 = "000.00"
-        self.meterFlow2 = "000.00"
-        self.meterFlow3 = "000.00"
-        self.meterSum1 = "000.00"
-        self.meterSum2 = "000.00"
-        self.meterSum3 = "000.00"
+        # self.meterFlow1 = "000.00"
+        # self.meterFlow2 = "000.00"
+        # self.meterFlow3 = "000.00"
+        # self.meterSum1 = "000.00"
+        # self.meterSum2 = "000.00"
+        # self.meterSum3 = "000.00"
 
         '''
         Code below displays a Sticker object on mimic window.
@@ -127,8 +127,8 @@ class Mimic(QWidget):
         #qp.drawEllipse(100, 50, 100, 50)
         pxmp = QPixmap("LU_FRONT_2D.jpg")
         qp.drawPixmap(20, 10, pxmp)
-        qp.drawText(175, 170, "FLOW:" + str(self.meterFlow1))
-        qp.drawText(175, 200, " SUM:" + str(self.meterSum1))
+        # qp.drawText(175, 170, "FLOW:" + str(self.meterFlow1))
+        # qp.drawText(175, 200, " SUM:" + str(self.meterSum1))
 
         if not self.img_loaded:
             print(f'Width = {pxmp.width()} Height = {pxmp.height()}')

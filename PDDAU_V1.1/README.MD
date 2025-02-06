@@ -19,6 +19,19 @@ Mimic is a custom QWidget. At the construction of Mimic it shows an image with
 a rect border around it. The rect border geometry information actually comes from
 a json file. 
 
+# Qt Designer Issue
+The official QT Designer Latest version generated UI is not compatible with this 
+app or may be not compatible with some packages. I had to use pyqt5_qt5_designer 
+in windows from pycharm package manager. In Ubuntu I installed pip install pyqt5-tools 
+and start the designer by pyqt5-tools designer.
+Here are the packages working versions in windows:
+1. PyQt5 5.15.11
+2. PyQt5-Qt 5.15.2
+3. PyQt5_Sip 12.17.0
+4. PyQt5-Qt5 5.15.2
+5. pyqt5_qt5_designer 0.0.14
+
+
 # Ubuntu 22.xx wayland PyQt5 xcb errors sanion_python_projects
 Install Setup Tools
 sudo apt install python-setuptools
