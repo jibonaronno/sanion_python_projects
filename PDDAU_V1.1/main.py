@@ -16,6 +16,7 @@ from mimic import Mimic
 from comparison_chart import CompareChartWidget
 import os
 import json
+from pddsrvr import PddSrvr
 
 os.environ["XDG_SESSION_TYPE"] = "xcb"
 # _UI5 = join(dirname(abspath(__file__)), 'charttabs.ui')
@@ -51,6 +52,7 @@ class MainWindow(QMainWindow):
         self.UiComponents()
         self.configs = Configs()
         self.configs.loadJson("settings.json")
+        self.pdsrvr = PddSrvr()
         try:
             self.qlist.addItem('Local IP : ' + self.configs.local_ip)
             self.qlist.addItem('Local Port : ' + self.configs.local_port)
@@ -79,6 +81,7 @@ class MainWindow(QMainWindow):
 
     @Slot()
     def on_btnInit_clicked(self):
+        self.pdsrvr.run_server()
         pass
 
 if __name__ == '__main__':

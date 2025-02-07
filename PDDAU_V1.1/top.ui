@@ -116,6 +116,9 @@
           </item>
           <item>
            <widget class="QPushButton" name="btnConnect">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="text">
              <string>Connect</string>
             </property>
@@ -123,6 +126,9 @@
           </item>
           <item>
            <widget class="QPushButton" name="btnProcA">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="text">
              <string>Send-01</string>
             </property>
@@ -130,6 +136,9 @@
           </item>
           <item>
            <widget class="QPushButton" name="btnProcB">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="text">
              <string>Send-02</string>
             </property>
@@ -137,6 +146,9 @@
           </item>
           <item>
            <widget class="QPushButton" name="btnProcC">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="text">
              <string>Send-03</string>
             </property>
