@@ -17,6 +17,7 @@ from comparison_chart import CompareChartWidget
 import os
 import json
 from pddsrvr import PddSrvr
+import threading, signal
 
 os.environ["XDG_SESSION_TYPE"] = "xcb"
 # _UI5 = join(dirname(abspath(__file__)), 'charttabs.ui')
@@ -53,6 +54,7 @@ class MainWindow(QMainWindow):
         self.configs = Configs()
         self.configs.loadJson("settings.json")
         self.pdsrvr = PddSrvr()
+        self.event_pddthread_stop = threading.Event()
         try:
             self.qlist.addItem('Local IP : ' + self.configs.local_ip)
             self.qlist.addItem('Local Port : ' + self.configs.local_port)
