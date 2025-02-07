@@ -53,8 +53,10 @@ class MainWindow(QMainWindow):
         self.UiComponents()
         self.configs = Configs()
         self.configs.loadJson("settings.json")
-        self.pdsrvr = PddSrvr()
         self.event_pddthread_stop = threading.Event()
+        self.pdsrvr = PddSrvr(self.event_pddthread_stop)
+        self.server_thread = threading.Thread(target=self.pdsrvr.run_server)
+
         try:
             self.qlist.addItem('Local IP : ' + self.configs.local_ip)
             self.qlist.addItem('Local Port : ' + self.configs.local_port)
@@ -83,8 +85,12 @@ class MainWindow(QMainWindow):
 
     @Slot()
     def on_btnInit_clicked(self):
-        self.pdsrvr.run_server()
-        pass
+        self.server_thread.start()
+        # self.pdsrvr.run_server()
+
+    @Slot()
+    def on_btnStop_clicked(self):
+        self.event_pddthread_stop.set()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

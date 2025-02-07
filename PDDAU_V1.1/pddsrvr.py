@@ -24,7 +24,7 @@ class PddSrvr(object):
         sockets_list = [server_socket]
 
         try:
-            while True:
+            while not self.stop_event.is_set():
                 # Use select to get the list of sockets ready for reading, writing or with errors.
                 readable, writable, exceptional = select.select(sockets_list, [], sockets_list)
 
@@ -60,7 +60,10 @@ class PddSrvr(object):
                     sockets_list.remove(notified_socket)
                     notified_socket.close()
         finally:
-            pass
+            print("Shutting down server...")
+            # Close all remaining sockets
+            for sock in sockets_list:
+                sock.close()
 
 # if __name__ == '__main__':
 #     try:

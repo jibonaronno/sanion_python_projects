@@ -162,6 +162,13 @@
            </widget>
           </item>
           <item>
+           <widget class="QPushButton" name="btnStop">
+            <property name="text">
+             <string>Stop</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QLineEdit" name="lineEdit">
             <property name="inputMask">
              <string>000.000.000.000;_</string>
