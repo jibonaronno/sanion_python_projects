@@ -54,7 +54,8 @@ class MainWindow(QMainWindow):
         self.configs = Configs()
         self.configs.loadJson("settings.json")
         self.event_pddthread_stop = threading.Event()
-        self.pdsrvr = PddSrvr(self.event_pddthread_stop)
+        self.send_samples = threading.Event()
+        self.pdsrvr = PddSrvr(self.event_pddthread_stop, self.send_samples)
         self.server_thread = threading.Thread(target=self.pdsrvr.run_server)
 
         try:
@@ -87,6 +88,12 @@ class MainWindow(QMainWindow):
     def on_btnInit_clicked(self):
         self.server_thread.start()
         # self.pdsrvr.run_server()
+
+    @Slot()
+    def on_btnProcD_clicked(self):
+        print("Set send_samples .. \n")
+        self.send_samples.set()
+
 
     @Slot()
     def on_btnStop_clicked(self):

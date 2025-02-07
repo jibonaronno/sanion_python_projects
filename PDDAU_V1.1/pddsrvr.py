@@ -1,10 +1,13 @@
 import socket
 import select
+import threading, signal
+import os, time
 
 class PddSrvr(object):
-    def __init__(self, stop_event):
+    def __init__(self, stop_event, send_samples):
         super().__init__()
         self.stop_event = stop_event
+        self.send_samples = send_samples
 
     def run_server(self, host='192.168.246.147', port=5000):
         # Create a TCP/IP socket
@@ -23,6 +26,10 @@ class PddSrvr(object):
         # List of sockets to monitor for incoming data
         sockets_list = [server_socket]
 
+        random_data = os.urandom(16384)
+
+        client_socket = None
+
         try:
             while not self.stop_event.is_set():
                 # Use select to get the list of sockets ready for reading, writing or with errors.
@@ -35,6 +42,7 @@ class PddSrvr(object):
                         print(f"Accepted new connection from {client_address}")
                         client_socket.setblocking(False)
                         sockets_list.append(client_socket)
+                        print(str(len(sockets_list)) + " Number Of Sockets \n")
                     else:
                         # Existing connection has sent some data
                         try:
@@ -47,7 +55,14 @@ class PddSrvr(object):
                             # Data received, for demonstration we simply echo it back to the client.
                             message = data.decode().strip()
                             print(f"Received message from {notified_socket.getpeername()}: {message}")
-                            notified_socket.send(data)  # Echo back the received data
+                            # notified_socket.send(data)  # Echo back the received data
+                            # if self.send_samples.is_set():
+                            print("Waiting 11 Sec Before Streaming \n")
+                            time.sleep(11)
+                            while 1:
+                                print("Sending 1024 Samples \n")
+                                client_socket.sendall(random_data)
+                                time.sleep(1)
                         else:
                             # No data means the client gracefully closed the connection.
                             print(f"Connection closed from {notified_socket.getpeername()}")
@@ -59,6 +74,9 @@ class PddSrvr(object):
                     print(f"Handling exceptional condition for {notified_socket.getpeername()}")
                     sockets_list.remove(notified_socket)
                     notified_socket.close()
+
+
+
         finally:
             print("Shutting down server...")
             # Close all remaining sockets
