@@ -99,6 +99,15 @@ class MainWindow(QMainWindow):
     def on_btnStop_clicked(self):
         self.event_pddthread_stop.set()
 
+    @Slot()
+    def on_btnchk128_clicked(self):
+        if self.btnchk128.isChecked():
+            self.pdsrvr.setSamples128(True)
+            print("128 Samples Selected\n")
+        else:
+            self.pdsrvr.setSamples128(False)
+            print("1024 Samples Selected\n")
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     # qtmodern.styles.dark(app)

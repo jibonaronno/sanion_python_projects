@@ -8,6 +8,10 @@ class PddSrvr(object):
         super().__init__()
         self.stop_event = stop_event
         self.send_samples = send_samples
+        self.samples128 = False
+
+    def setSamples128(self, samples128):
+        self.samples128 = samples128
 
     def run_server(self, host='192.168.246.147', port=5000):
         # Create a TCP/IP socket
@@ -27,6 +31,9 @@ class PddSrvr(object):
         sockets_list = [server_socket]
 
         random_data = os.urandom(16384)
+
+        if self.samples128:
+            random_data = os.urandom(256)
 
         client_socket = None
 
