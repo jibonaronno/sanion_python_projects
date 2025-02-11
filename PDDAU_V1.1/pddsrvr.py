@@ -13,7 +13,7 @@ class PddSrvr(object):
     def setSamples128(self, samples128):
         self.samples128 = samples128
 
-    def run_server(self, host='192.168.246.147', port=5000):
+    def run_server(self, host='192.168.246.13', port=5000):
         # Create a TCP/IP socket
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # Allow to reuse the address
@@ -60,8 +60,9 @@ class PddSrvr(object):
 
                         if data:
                             # Data received, for demonstration we simply echo it back to the client.
-                            message = data.decode().strip()
-                            print(f"Received message from {notified_socket.getpeername()}: {message}")
+                            # message = data.decode().strip()
+                            # print(f"Received message from {notified_socket.getpeername()}: {message}")
+                            print(f"Received message from {notified_socket.getpeername()}: ")
                             # notified_socket.send(data)  # Echo back the received data
                             # if self.send_samples.is_set():
                             print("Waiting 11 Sec Before Streaming \n")
