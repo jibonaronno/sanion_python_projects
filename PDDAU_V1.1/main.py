@@ -18,6 +18,7 @@ import os
 import json
 from pddsrvr import PddSrvr
 import threading, signal
+from qtpy.QtCore import Slot, QTimer, QThread, Signal, QObject, Qt, QMutex
 
 os.environ["XDG_SESSION_TYPE"] = "xcb"
 # _UI5 = join(dirname(abspath(__file__)), 'charttabs.ui')
@@ -55,8 +56,15 @@ class MainWindow(QMainWindow):
         self.configs.loadJson("settings.json")
         self.event_pddthread_stop = threading.Event()
         self.send_samples = threading.Event()
+
+        # self.server_thread = threading.Thread(target=self.pdsrvr.run_server)
+
         self.pdsrvr = PddSrvr(self.event_pddthread_stop, self.send_samples)
-        self.server_thread = threading.Thread(target=self.pdsrvr.run_server)
+        self.server_thread = QThread()
+        self.server_thread.started.connect(self.pdsrvr.run_server)
+        self.pdsrvr.signal.connect(self.SignalCallback)
+        self.pdsrvr.moveToThread(self.server_thread)
+
 
         try:
             self.qlist.addItem('Local IP : ' + self.configs.local_ip)
@@ -66,6 +74,9 @@ class MainWindow(QMainWindow):
             print(f'Error main.py : {str(e)}')
         # print(self.verticalLayout_4.children())
         self.show()
+
+    def SignalCallback(self, signal_data):
+        pass
 
     def UiComponents(self):
         self.actionOpen.triggered.connect(self.OpenFile)
@@ -93,6 +104,9 @@ class MainWindow(QMainWindow):
     def on_btnProcD_clicked(self):
         print("Set send_samples .. \n")
         self.send_samples.set()
+
+    def closeEvent(self, event):
+        pass
 
 
     @Slot()

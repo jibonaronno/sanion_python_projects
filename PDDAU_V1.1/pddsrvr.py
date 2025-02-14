@@ -2,17 +2,20 @@ import socket
 import select
 import threading, signal
 import os, time
+from qtpy.QtCore import Slot, QTimer, QThread, Signal, QObject, Qt, QMutex
 
-class PddSrvr(object):
+class PddSrvr(QObject):
+    signal = Signal(str)
     def __init__(self, stop_event, send_samples):
-        super().__init__()
         self.stop_event = stop_event
         self.send_samples = send_samples
         self.samples128 = False
+        super().__init__()
 
     def setSamples128(self, samples128):
         self.samples128 = samples128
 
+    @Slot()
     def run_server(self, host='192.168.246.13', port=5000):
         # Create a TCP/IP socket
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
