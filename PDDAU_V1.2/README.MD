@@ -13,7 +13,9 @@ commands.
 The threading technique is changed from previous method. Now we are using 
 class ServerThread(QThread): and inside ServerThread we are using pyqtSignal 
 for sending signal to MainWindow which is main.py. This ServerThread class is 
-inside pddsrvr.py file. 
+inside pddsrvr.py file. QThread class has a method self.isInterruptionRequested()
+to check if it receives to stop the tread. Since select.select timeout is 0.5 sec
+it can check for interruption at every 0.5 sec. 
 
 As we are using select module for TCP communication, initially created the TCP 
 object as nonblocking mode, we applied a timeout parameter value of 0.5 for 
