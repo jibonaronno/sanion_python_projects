@@ -21,7 +21,8 @@ As we are using select module for TCP communication, initially created the TCP
 object as nonblocking mode, we applied a timeout parameter value of 0.5 for 
 select.select(...) method. So it does not block inside the thread loop. 
 
-select.select(..) method is fed with a list of sockets, this list of sockets 
+select.select(..) method is fed with a list of sockets, this method then spits 
+out 3 types of list of sockets for readable, writables and exceptions. 
 
 I was facing problems to implement the Layouts in the Main window. The problem 
 occurred for a custom widget Mimic. So I place a QWidget in the QT Designer and 
