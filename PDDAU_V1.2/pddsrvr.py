@@ -31,7 +31,10 @@ class ServerThread(QThread):
         while self.running and not self.isInterruptionRequested():
             try:
                 # Use a timeout so we can check self.running regularly
-                rlist, _, _ = select.select(sockets, [], sockets, 0.5)
+                for sock in sockets:
+                    if sock.fileno() == -1:
+                        sockets.remove(sock)
+                rlist, wlist, exceptional = select.select(sockets, [], sockets)
             except Exception as e:
                 self.received.emit(f"Select error: {e}")
                 continue
