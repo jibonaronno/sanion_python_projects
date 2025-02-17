@@ -10,6 +10,17 @@ Listen to port 5000 on a PDDAU compatible TCP server. After connection wait for
 commands. 
 
 ## Operations
+The threading technique is changed from previous method. Now we are using 
+class ServerThread(QThread): and inside ServerThread we are using pyqtSignal 
+for sending signal to MainWindow which is main.py. This ServerThread class is 
+inside pddsrvr.py file. 
+
+As we are using select module for TCP communication, initially created the TCP 
+object as nonblocking mode, we applied a timeout parameter value of 0.5 for 
+select.select(...) method. So it does not block inside the thread loop. 
+
+select.select(..) method is fed with a list of sockets, this list of sockets 
+
 I was facing problems to implement the Layouts in the Main window. The problem 
 occurred for a custom widget Mimic. So I place a QWidget in the QT Designer and 
 pass this QWidget as a parent for the custom widget Mimic. Mimic is created in 
