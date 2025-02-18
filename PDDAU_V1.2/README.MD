@@ -21,6 +21,9 @@ As we are using select module for TCP communication, initially created the TCP
 object as nonblocking mode, we applied a timeout parameter value of 0.5 for 
 select.select(...) method. So it does not block inside the thread loop. 
 
+GPT generated code had a problem, it closes the connection after just 1 packet send 
+attempt. The socket close instruction is removed now. 
+
 select.select(..) method is fed with a list of sockets, this list of sockets 
 
 I was facing problems to implement the Layouts in the Main window. The problem 

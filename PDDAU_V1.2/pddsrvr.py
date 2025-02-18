@@ -31,9 +31,10 @@ class ServerThread(QThread):
         while self.running and not self.isInterruptionRequested():
             try:
                 # Use a timeout so we can check self.running regularly
-                for sock in sockets:
-                    if sock.fileno() == -1:
-                        sockets.remove(sock)
+                # for sock in sockets:
+                #     if sock.fileno() == -1:
+                #         sockets.remove(sock)
+                time.sleep(1)
                 rlist, wlist, exceptional = select.select(sockets, [], sockets)
             except Exception as e:
                 self.received.emit(f"Select error: {e}")
@@ -64,7 +65,8 @@ class ServerThread(QThread):
                                 for i in range(0, len(self.random_data), 2):
                                     two_bytes = data[i:i + 2]
                                     self.send_sample_data(two_bytes)
-                                    self.usleep(976)
+                                    # self.usleep(1953)
+                                    self.usleep(217)
                         else:
                             # No data: client has closed connection
                             peer = sock.getpeername()
@@ -85,9 +87,9 @@ class ServerThread(QThread):
                 # (For brevity, exceptional conditions are not handled separately here.)
 
                 # Clean up sockets when stopping
-            for sock in sockets:
-                sock.close()
-            self.received.emit("Server stopped.")
+            # for sock in sockets:
+            #     sock.close()
+            # self.received.emit("Server stopped.")
 
     @pyqtSlot()
     def stop(self):
