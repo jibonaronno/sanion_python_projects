@@ -35,6 +35,13 @@ Mimic is a custom QWidget. At the construction of Mimic it shows an image with
 a rect border around it. The rect border geometry information actually comes from
 a json file. 
 
+# Feature for PDDAU Data validation
+On LU side there is a sequence of operations to communicate with PDDAU. So this virtual PDDAU 
+should follow the format or sequence. Following workflow shows the main sequence of PD data 
+acquisition from LU perspective: <br>
+<img alt="NO IMAGE" src="img/img056.jpg"><br><br>
+
+
 # Qt Designer Issue
 The official QT Designer Latest version generated UI is not compatible with this 
 app or may be not compatible with some packages. I had to use pyqt5_qt5_designer 

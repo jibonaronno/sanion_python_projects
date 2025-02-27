@@ -23,6 +23,7 @@ class ServerThread(QThread):
         self.server_socket.bind((self.host, self.port))
         self.server_socket.listen(5)
         self.server_socket.setblocking(False)
+        received_data = b''
 
         # List of sockets to monitor: start with the server socket
         sockets = [self.server_socket]
