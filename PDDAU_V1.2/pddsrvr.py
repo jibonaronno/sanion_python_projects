@@ -42,6 +42,7 @@ class ServerThread(QThread):
         self.server_socket.listen(5)
         self.server_socket.setblocking(False)
         received_data = b''
+        header = None
 
         # List of sockets to monitor: start with the server socket
         sockets = [self.server_socket]
@@ -79,13 +80,17 @@ class ServerThread(QThread):
                             peer = sock.getpeername()
                             text = data.decode(errors="replace")
                             self.received.emit(f"Data from {peer}: {text}")
+                            if self.unpackReceivedData(data) != None:
+                                header = self.unpackReceivedData(data)
+                                print(header)
                             print("Start Sending Data Stream")
-                            while 1:
-                                for i in range(0, len(self.random_data), 2):
-                                    two_bytes = data[i:i + 2]
-                                    self.send_sample_data(two_bytes)
-                                    # self.usleep(1953)
-                                    self.usleep(217)
+                            # Data Sending is disabled for some moment now. 
+                            # while 1:
+                            #     for i in range(0, len(self.random_data), 2):
+                            #         two_bytes = data[i:i + 2]
+                            #         self.send_sample_data(two_bytes)
+                            #         # self.usleep(1953)
+                            #         self.usleep(217)
                         else:
                             # No data: client has closed connection
                             peer = sock.getpeername()
