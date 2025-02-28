@@ -1,6 +1,12 @@
 import socket
+import struct
+
 import select
 import os, time
+
+# Define the format strings:
+# '<' specifies little-endian. Adjust if you need big-endian (use '>').
+HEADER_FORMAT = "<BBh"          # msg_id (B), msg_type (B), body_len (h)
 
 import sys
 from PyQt5.QtCore import QThread, QElapsedTimer, pyqtSignal, pyqtSlot
@@ -15,6 +21,18 @@ class ServerThread(QThread):
         self.clients = []  # List to keep track of connected client sockets
         self.random_data = os.urandom(256)
         self.running = True
+
+    def unpackReceivedData(self, data):
+        if len(data) >= 4:
+            unpacked = struct.unpack(HEADER_FORMAT, data)
+            header = {
+                "msg_id":   unpacked[0],
+                "msg_type": unpacked[1],
+                "body_len": unpacked[2]
+            }
+            return header
+        else:
+            return None
 
     def run(self):
         # Create server socket and set up non-blocking mode
