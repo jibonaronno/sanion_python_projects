@@ -3,13 +3,61 @@ import struct
 
 import select
 import os, time
+import numpy as np
 
 # Define the format strings:
 # '<' specifies little-endian. Adjust if you need big-endian (use '>').
 HEADER_FORMAT = "<BBh"          # msg_id (B), msg_type (B), body_len (h)
 
+NUM_SAMPLES = 1024
+AMPLITUDE = 32767  # Max value for 16-bit signed integer
+
 import sys
 from PyQt5.QtCore import QThread, QElapsedTimer, pyqtSignal, pyqtSlot
+
+# Generate sine wave data
+def generate_sine_wave():
+    angles = np.linspace(0, 2 * np.pi, NUM_SAMPLES, endpoint=False)
+    sine_wave = (AMPLITUDE * np.sin(angles)).astype(np.int16)
+    return sine_wave
+
+# Define message structures
+class SpectrumPacketHeader:
+    def __init__(self, msg_id, msg_type, body_len):
+        self.msg_id = msg_id
+        self.msg_type = msg_type
+        self.body_len = body_len
+
+    def to_bytes(self):
+        return struct.pack("<BBh", self.msg_id, self.msg_type, self.body_len)
+
+class MsgPdBody:
+    def __init__(self, ch_idx=0, EventAmpTh1=0, EventAmpTh2=0, EventPpsTh=0, data=None):
+        self.ch_idx = ch_idx
+        self.EventAmpTh1 = EventAmpTh1
+        self.EventAmpTh2 = EventAmpTh2
+        self.EventPpsTh = EventPpsTh
+        self.data = data if data is not None else bytearray(NUM_SAMPLES * 2)
+
+    def to_bytes(self):
+        return struct.pack("<BBBB", self.ch_idx, self.EventAmpTh1, self.EventAmpTh2, self.EventPpsTh) + self.data
+
+class MsgPdFullPacket:
+    def __init__(self, msg_type):
+        # self.header = SpectrumPacketHeader(0x01, 0x11, 4 * (NUM_SAMPLES * 2 + 4))
+        self.header = SpectrumPacketHeader(0x01, msg_type, 4 * (NUM_SAMPLES * 2 + 4))
+        sine_wave = generate_sine_wave().tobytes()
+        self.data = [MsgPdBody(data=sine_wave) for _ in range(4)]
+
+    def to_bytes(self):
+        packet = self.header.to_bytes()
+        for body in self.data:
+            packet += body.to_bytes()
+        return packet
+
+def fillup_data_packet(msg_type):
+    packet = MsgPdFullPacket(msg_type)
+    return packet.to_bytes()
 
 class ServerThread(QThread):
     received = pyqtSignal(str)
@@ -41,6 +89,8 @@ class ServerThread(QThread):
         self.server_socket.bind((self.host, self.port))
         self.server_socket.listen(5)
         self.server_socket.setblocking(False)
+        self.packet_start = fillup_data_packet(0x11)
+        self.packet_loop = fillup_data_packet(0x03)
         received_data = b''
         header = None
 
@@ -83,14 +133,15 @@ class ServerThread(QThread):
                             if self.unpackReceivedData(data) != None:
                                 header = self.unpackReceivedData(data)
                                 print(header)
+                                self.send_sample_data(self.packet_start)
                             print("Start Sending Data Stream")
-                            # Data Sending is disabled for some moment now. 
-                            # while 1:
-                            #     for i in range(0, len(self.random_data), 2):
-                            #         two_bytes = data[i:i + 2]
-                            #         self.send_sample_data(two_bytes)
-                            #         # self.usleep(1953)
-                            #         self.usleep(217)
+                            self.usleep(100000)
+                            while 1:
+                                for i in range(0, len(self.random_data), 2):
+                                    two_bytes = data[i:i + 2]
+                                    self.send_sample_data(self.packet_loop)
+                                    # self.usleep(1953)
+                                    self.usleep(217)
                         else:
                             # No data: client has closed connection
                             peer = sock.getpeername()
