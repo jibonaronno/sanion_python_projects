@@ -135,13 +135,22 @@ class ServerThread(QThread):
                                 print(header)
                                 self.send_sample_data(self.packet_start)
                             print("Start Sending Data Stream")
-                            self.usleep(100000)
+                            self.usleep(10000)
                             while 1:
+                                # self.send_sample_data(self.packet_loop)
+                                # self.usleep(217)
+
                                 for i in range(0, len(self.random_data), 2):
-                                    two_bytes = data[i:i + 2]
-                                    self.send_sample_data(self.packet_loop)
+                                    two_bytes = self.random_data[i:i + 2]
+                                    self.send_sample_data(two_bytes)
                                     # self.usleep(1953)
                                     self.usleep(217)
+
+                                # for i in range(0, len(self.random_data), 2):
+                                #     two_bytes = data[i:i + 2]
+                                #     self.send_sample_data(self.two_bytes)
+                                #     # self.usleep(1953)
+                                #     self.usleep(217)
                         else:
                             # No data: client has closed connection
                             peer = sock.getpeername()
