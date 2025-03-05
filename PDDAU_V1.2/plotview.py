@@ -26,6 +26,8 @@ class PlotView(QWidget):
         self.horizontalLayout_5.addWidget(self.charts02)
 
     def injectDataStreamToGraph_16bit(self, data):
-        for i in range(0, len(data), 2):
-            two_bytes = data[i:i + 2]
-            self.charts01.Append(int(two_bytes))
+        for dat in data:
+            self.charts01.Append(dat)
+        # for i in range(0, len(data), 2):
+        #     two_bytes = data[i:i + 2]
+        #     self.charts01.Append(int(two_bytes))

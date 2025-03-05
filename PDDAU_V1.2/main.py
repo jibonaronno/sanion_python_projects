@@ -94,6 +94,7 @@ class MainWindow(QMainWindow):
         print(message)
         if message == "showplot":
             self.plotview.showNormal()
+            self.plotview.injectDataStreamToGraph_16bit(self.server_thread.pd_packet_loop.sine_wave_raw)
 
 
 

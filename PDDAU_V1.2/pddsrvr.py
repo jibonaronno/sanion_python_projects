@@ -47,6 +47,7 @@ class MsgPdFullPacket:
         # self.header = SpectrumPacketHeader(0x01, 0x11, 4 * (NUM_SAMPLES * 2 + 4))
         self.header = SpectrumPacketHeader(0x01, msg_type, 4 * (NUM_SAMPLES * 2 + 4))
         self.sine_wave = generate_sine_wave().tobytes()
+        self.sine_wave_raw = generate_sine_wave()
         self.data = [MsgPdBody(data=self.sine_wave) for _ in range(4)]
 
     def to_bytes(self):
