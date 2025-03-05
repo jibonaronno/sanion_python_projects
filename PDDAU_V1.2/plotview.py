@@ -16,7 +16,7 @@ from kalmanfilter import KalmanFilter
 _UI_PLOT_VIEW = join(dirname(abspath(__file__)), 'comparison_chart.ui')
 
 class PlotView(QWidget):
-    def __init__(self, folder_path:str, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.widget = uic.loadUi(_UI_PLOT_VIEW, self)
         self.charts01 = ChartTab(self)
@@ -25,6 +25,7 @@ class PlotView(QWidget):
         self.horizontalLayout_4.addWidget(self.charts01)
         self.horizontalLayout_5.addWidget(self.charts02)
 
-    def injectDataStreamToGraph(self, data):
-
-        self.charts01.Append()
+    def injectDataStreamToGraph_16bit(self, data):
+        for i in range(0, len(data), 2):
+            two_bytes = data[i:i + 2]
+            self.charts01.Append(int(two_bytes))

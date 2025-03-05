@@ -12,6 +12,7 @@ from collections import deque
 import serial
 import serial.tools.list_ports as port_list
 
+from plotview import PlotView
 from mimic import Mimic
 from comparison_chart import CompareChartWidget
 import os
@@ -56,6 +57,8 @@ class MainWindow(QMainWindow):
         self.event_pddthread_stop = threading.Event()
         self.send_samples = threading.Event()
 
+        self.plotview = PlotView()
+
         # self.pdsrvr = PddSrvr(self.event_pddthread_stop, self.send_samples)
         # self.server_thread = threading.Thread(target=self.pdsrvr.run_server)
         self.server_thread = ServerThread(host='192.168.246.147', port = 5000)
@@ -89,6 +92,9 @@ class MainWindow(QMainWindow):
 
     def on_ServerThraedSignalCallback(self, message):
         print(message)
+        if message == "showplot":
+            self.plotview.showNormal()
+
 
 
     @Slot()

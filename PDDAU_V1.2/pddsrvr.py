@@ -99,6 +99,7 @@ class ServerThread(QThread):
         # List of sockets to monitor: start with the server socket
         sockets = [self.server_socket]
         self.received.emit(f"Server listening on {self.host}:{self.port}")
+        self.received.emit(f"showplot")
 
         while self.running and not self.isInterruptionRequested():
             try:
@@ -311,26 +312,6 @@ class PddSrvr(object):
             # Close all remaining sockets
             for sock in sockets_list:
                 sock.close()
-
-class WorkerThread(QThread):
-    # Signal to emit each time the interval has elapsed (we send the elapsed microseconds)
-    tick = pyqtSignal(int)
-
-    def run(self):
-        timer = QElapsedTimer()
-        timer.start()
-        last_ns = timer.nsecsElapsed()  # nanoseconds elapsed at last tick
-        interval_ns = 976 * 1000         # convert 976 microseconds to nanoseconds
-
-        while not self.isInterruptionRequested():
-            now_ns = timer.nsecsElapsed()
-            if now_ns - last_ns >= interval_ns:
-                # Emit the tick signal with the current elapsed time in microseconds
-                self.tick.emit(int(now_ns / 1000))
-                last_ns = now_ns
-            # Yield a bit to avoid hogging the CPU entirely.
-            # usleep takes microseconds as argument.
-            self.usleep(10)
 
 # if __name__ == '__main__':
 #     try:
