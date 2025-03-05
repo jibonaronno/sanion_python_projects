@@ -46,8 +46,8 @@ class MsgPdFullPacket:
     def __init__(self, msg_type):
         # self.header = SpectrumPacketHeader(0x01, 0x11, 4 * (NUM_SAMPLES * 2 + 4))
         self.header = SpectrumPacketHeader(0x01, msg_type, 4 * (NUM_SAMPLES * 2 + 4))
-        sine_wave = generate_sine_wave().tobytes()
-        self.data = [MsgPdBody(data=sine_wave) for _ in range(4)]
+        self.sine_wave = generate_sine_wave().tobytes()
+        self.data = [MsgPdBody(data=self.sine_wave) for _ in range(4)]
 
     def to_bytes(self):
         packet = self.header.to_bytes()
@@ -55,9 +55,9 @@ class MsgPdFullPacket:
             packet += body.to_bytes()
         return packet
 
-def fillup_data_packet(msg_type):
-    packet = MsgPdFullPacket(msg_type)
-    return packet.to_bytes()
+    def fillup_data_packet(self):
+        # packet = MsgPdFullPacket(msg_type)
+        return self.to_bytes()
 
 class ServerThread(QThread):
     received = pyqtSignal(str)
@@ -89,8 +89,10 @@ class ServerThread(QThread):
         self.server_socket.bind((self.host, self.port))
         self.server_socket.listen(5)
         self.server_socket.setblocking(False)
-        self.packet_start = fillup_data_packet(0x11)
-        self.packet_loop = fillup_data_packet(0x03)
+        self.pd_packet_start = MsgPdFullPacket(0x11)
+        self.pd_packet_loop = MsgPdFullPacket(0x03)
+        self.packet_start = self.pd_packet_start.fillup_data_packet()
+        self.packet_loop = self.pd_packet_loop.fillup_data_packet()
         received_data = b''
         header = None
 
