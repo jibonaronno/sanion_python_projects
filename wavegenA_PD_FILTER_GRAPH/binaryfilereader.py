@@ -21,6 +21,11 @@ class BinaryFileReader(object):
         print("File name: ", filname)
         self.ficontent = Path(filname).read_bytes()  # Python 3.5+
 
+    def readFilSize(self, fullpath):
+        filname = fullpath
+        print("File name: ", filname)
+        self.ficontent = Path(filname).read_bytes()  # Python 3.5+
+
     def printContent_S8(self, _offset=0):
         barray = self.ficontent[_offset:]
         print("Length : ", len(barray))

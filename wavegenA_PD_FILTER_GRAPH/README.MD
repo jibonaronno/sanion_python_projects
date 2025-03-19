@@ -5,6 +5,11 @@
 
 ## This Project is derived from PD Data Filter Graph from Flowmeter_PD_FILTER_GRAPH and wavegenA_PD_FILTER_GRAPH <br>
 
+# Recent Update :: Date 19-Mar-2025
+Since Larger binary file needed to be inspected, The Append(...) function in charttab.py takes longer time when 
+assigning large data in a Loop. So a new function has been introduced to load only a portion of the file into 
+chart in comparison_chart.py : def injectRawDataStreamToGraphSize(self, _size): .
+
 # Requirement
 PD data analysis in graph before filter and after filter. 
 This task will do the kalman filter for now. Later we can apply more advanced filters.

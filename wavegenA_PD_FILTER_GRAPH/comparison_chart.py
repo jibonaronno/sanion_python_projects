@@ -85,6 +85,21 @@ class CompareChartWidget(QWidget):
         for byt in predictions:
             self.charts02.Append(byt[0])
 
+    def injectRawDataStreamToGraph(self):
+        bytesArray = self.binfil.getArray()
+        for byt in bytesArray:
+            self.charts01.Append(int(byt))
+
+    def injectRawDataStreamToGraphSize(self, _size):
+        bytesArray = self.binfil.getArray()
+        sz = 0
+        self.charts01.Clear()
+        for byt in bytesArray:
+            self.charts01.Append(int(byt))
+            sz += 1
+            if(sz >= _size):
+                return
+
     def showKalmannPlotlib(self):
         bytesArray = self.binfil.getArray()
         dt = 1000.0 / 7680.0
@@ -112,7 +127,9 @@ class CompareChartWidget(QWidget):
         self.binfil.printFilContentSize(self.file_path_dictionary[item.text()])
         # self.injectDataStreamToGraph()
         # self.showKalmannPlotlib()
-        self.showKalmann()
+
+        self.injectRawDataStreamToGraphSize(2000)
+        # self.showKalmann()
 
     def prepareExport(self):
         if len(self.file_path_dictionary) > 0:

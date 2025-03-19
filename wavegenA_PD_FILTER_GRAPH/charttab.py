@@ -45,5 +45,9 @@ class ChartTab(QWidget):
             self.tfdata.append(self.ttm)
         self.curve1.setData(self.tfdata, self.flowdata)
 
+    def Clear(self):
+        self.flowdata.clear()
+        self.tfdata.clear()
+
     def initUI(self):
         pass
