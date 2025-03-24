@@ -48,6 +48,7 @@ class ChartTab(QWidget):
     def Clear(self):
         self.flowdata.clear()
         self.tfdata.clear()
+        self.ttm = 0
 
     def initUI(self):
         pass
