@@ -21,6 +21,11 @@ class BinaryFileReader(object):
         print("File name: ", filname)
         self.ficontent = Path(filname).read_bytes()  # Python 3.5+
 
+    def readFilSize(self, fullpath):
+        filname = fullpath
+        print("File name: ", filname)
+        self.ficontent = Path(filname).read_bytes()  # Python 3.5+
+
     def printContent_S8(self, _offset=0):
         barray = self.ficontent[_offset:]
         print("Length : ", len(barray))
@@ -35,6 +40,7 @@ class BinaryFileReader(object):
         barray = self.ficontent[0:]
         integers = unpack('<' + 'b' * (len(barray)), barray)    # '<' indicates the source data is Little Endian
                                                                 # 'b' asks for signed 8bit integer
+                                                                # 'B' asks for unsigned 8bit integer
         return integers
 
     def printFilContentSize(self, fullpath:str):

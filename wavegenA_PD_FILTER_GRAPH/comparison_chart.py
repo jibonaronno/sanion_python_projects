@@ -85,6 +85,21 @@ class CompareChartWidget(QWidget):
         for byt in predictions:
             self.charts02.Append(byt[0])
 
+    def injectRawDataStreamToGraph(self):
+        bytesArray = self.binfil.getArray()
+        for byt in bytesArray:
+            self.charts01.Append(int(byt))
+
+    def injectRawDataStreamToGraphSize(self, _size):
+        bytesArray = self.binfil.getArray()
+        sz = 0
+        self.charts01.Clear()
+        for byt in bytesArray:
+            self.charts01.Append(int(byt))
+            sz += 1
+            if(sz >= _size):
+                return
+
     def showKalmannPlotlib(self):
         bytesArray = self.binfil.getArray()
         dt = 1000.0 / 7680.0
@@ -112,12 +127,54 @@ class CompareChartWidget(QWidget):
         self.binfil.printFilContentSize(self.file_path_dictionary[item.text()])
         # self.injectDataStreamToGraph()
         # self.showKalmannPlotlib()
-        self.showKalmann()
+
+        self.injectRawDataStreamToGraphSize(4000)
+
+        self.printHexToConsoleShort(self.charts01.flowdata[500:], 1024, 20, 128)
+        # self.showKalmann()
 
     def prepareExport(self):
         if len(self.file_path_dictionary) > 0:
             for key, name in self.file_path_dictionary.items():
                 print(key, name)
+
+    def printHexToConsole(self, _data: bytes, nbytes_perLine=0, tot_bytes=0):
+        _counter = 0
+        _line_counter = 0
+        _tot_counter = 0
+        for _byte in _data:
+            # print(f'_byte', end='')
+            # print(' 0X'.join('{:02X}'.format(_byte)), end='')
+            print(f' 0X{_byte:02X}', end='')
+            _counter += 1
+            if nbytes_perLine != 0:
+                if _counter == nbytes_perLine:
+                    print(' ')
+                    if _tot_counter >= tot_bytes:
+                        return
+                    else:
+                        _tot_counter += _counter
+                        _counter = 0
+
+    def printHexToConsoleShort(self, _data: bytes, nwords_perLine=0, tot_words=0):
+        _counter = 0
+        _tot_counter = 0
+
+        # Convert the byte data to 16-bit integers (Little Endian)
+        num_shorts = len(_data) // 2  # Each short is 2 bytes
+        shorts = struct.unpack('<' + 'H' * num_shorts, _data[:num_shorts * 2])  # Convert to 16-bit words
+
+        for short in shorts:
+            print(f' 0X{short:04X}', end='')  # Print each 16-bit word in hex format
+
+            _counter += 1
+            if nwords_perLine != 0 and _counter == nwords_perLine:
+                print()  # New line
+                if _tot_counter >= tot_words:
+                    return
+                _tot_counter += _counter
+                _counter = 0
+        print()  # Ensure final newline
 
     @Slot()
     def on_btnParse01_clicked(self):
