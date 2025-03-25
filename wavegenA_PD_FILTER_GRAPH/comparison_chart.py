@@ -15,6 +15,7 @@ import os
 from binaryfilereader import BinaryFileReader
 import numpy as np
 from kalmanfilter import KalmanFilter
+import struct
 # import sys
 # from PyQt5.QtGui import QIcon
 # from PyQt5.QtCore import QDir
@@ -130,7 +131,7 @@ class CompareChartWidget(QWidget):
 
         self.injectRawDataStreamToGraphSize(4000)
 
-        self.printHexToConsoleShort(self.charts01.flowdata[500:], 1024, 20, 128)
+        self.printHexToConsoleShort(bytearray(self.charts01.flowdata)[500:], 20, 128)
         # self.showKalmann()
 
     def prepareExport(self):
