@@ -9,8 +9,13 @@ import numpy as np
 # '<' specifies little-endian. Adjust if you need big-endian (use '>').
 HEADER_FORMAT = "<BBh"          # msg_id (B), msg_type (B), body_len (h)
 
+#NUM_SAMPLES = 128
 NUM_SAMPLES = 1024
-AMPLITUDE = 32767  # Max value for 16-bit signed integer
+# AMPLITUDE = 32767  # Max value for 16-bit signed integer
+AMPLITUDE = 8000
+
+MIN_VAL = 0
+MAX_VAL = 8000
 
 import sys
 from PyQt5.QtCore import QThread, QElapsedTimer, pyqtSignal, pyqtSlot
@@ -18,8 +23,17 @@ from PyQt5.QtCore import QThread, QElapsedTimer, pyqtSignal, pyqtSlot
 # Generate sine wave data
 def generate_sine_wave():
     angles = np.linspace(0, 2 * np.pi, NUM_SAMPLES, endpoint=False)
-    sine_wave = (AMPLITUDE * np.sin(angles)).astype(np.int16)
-    return sine_wave
+    sine_wave = np.sin(angles)
+    # sine_wave = (AMPLITUDE * np.sin(angles) + 128).astype(np.int16)
+    # sine_wave_le = sine_wave.byteswap().newbyteorder('<')  # Convert to Little Endian
+    sine_wave_scaled = ((sine_wave + 1) / 2) * (MAX_VAL - MIN_VAL) + MIN_VAL
+    sine_wave_uint16 = sine_wave_scaled.astype(np.uint16)
+    sine_wave_le = sine_wave_uint16.view(sine_wave_uint16.dtype.newbyteorder('<'))  # '<' for Convert to Little Endian and '>' For Big Endian
+
+    # sine_wave_int16 = sine_wave_scaled.astype(np.int16)
+    # sine_wave_le = sine_wave_int16.view(sine_wave_int16.dtype.newbyteorder('>'))  # '<' for Convert to Little Endian and '>' For Big Endian
+
+    return sine_wave_le
 
 # Define message structures
 class SpectrumPacketHeader:
@@ -46,7 +60,7 @@ class MsgPdFullPacket:
     def __init__(self, msg_type):
         # self.header = SpectrumPacketHeader(0x01, 0x11, 4 * (NUM_SAMPLES * 2 + 4))
         self.header = SpectrumPacketHeader(0x01, msg_type, 4 * (NUM_SAMPLES * 2 + 4))
-        self.sine_wave = generate_sine_wave().tobytes()
+        self.sine_wave = generate_sine_wave().byteswap().tobytes()
         self.sine_wave_raw = generate_sine_wave()
         self.data = [MsgPdBody(data=self.sine_wave) for _ in range(4)]
 
@@ -54,6 +68,10 @@ class MsgPdFullPacket:
         packet = self.header.to_bytes()
         for body in self.data:
             packet += body.to_bytes()
+        return packet
+
+    def header_only_bytes(self):
+        packet = self.header.to_bytes()
         return packet
 
     def fillup_data_packet(self):
@@ -86,16 +104,17 @@ class ServerThread(QThread):
     def run(self):
         # Create server socket and set up non-blocking mode
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 65536)
         self.server_socket.bind((self.host, self.port))
         self.server_socket.listen(5)
         self.server_socket.setblocking(False)
         self.pd_packet_start = MsgPdFullPacket(0x11)
         self.pd_packet_loop = MsgPdFullPacket(0x03)
-        self.packet_start = self.pd_packet_start.fillup_data_packet()
+        self.packet_start = self.pd_packet_start.header_only_bytes()
         self.packet_loop = self.pd_packet_loop.fillup_data_packet()
         received_data = b''
         header = None
+        packet_send_counter = 0
 
         # List of sockets to monitor: start with the server socket
         sockets = [self.server_socket]
@@ -140,15 +159,30 @@ class ServerThread(QThread):
                                 self.send_sample_data(self.packet_start)
                             print("Start Sending Data Stream")
                             self.usleep(10000)
-                            while 1:
-                                # self.send_sample_data(self.packet_loop)
-                                # self.usleep(217)
 
-                                for i in range(0, len(self.random_data), 2):
-                                    two_bytes = self.random_data[i:i + 2]
-                                    self.send_sample_data(two_bytes)
-                                    # self.usleep(1953)
-                                    self.usleep(217)
+                            while 1:
+                                try:
+                                    self.send_sample_data(self.packet_loop)
+                                except Exception as e:
+                                    print(str(e))
+                                    break
+                                # self.usleep(217)
+                                # self.sleep(10)
+                                self.usleep(40000)
+                                # self.printHexToConsole(self.packet_loop, 20, 128)
+                                #### self.printHexToConsoleShort(self.packet_loop[500:], 20, 128)
+                                # self.msleep(10000)
+                                if packet_send_counter >= 60:
+                                    print("60 Cycle Sent")
+                                    packet_send_counter = 0
+                                else:
+                                    packet_send_counter += 1
+
+                                # for i in range(0, len(self.random_data), 2):
+                                #     two_bytes = self.random_data[i:i + 2]
+                                #     self.send_sample_data(two_bytes)
+                                #     # self.usleep(1953)
+                                #     self.usleep(217)
 
                                 # for i in range(0, len(self.random_data), 2):
                                 #     two_bytes = data[i:i + 2]
@@ -179,6 +213,44 @@ class ServerThread(QThread):
             #     sock.close()
             # self.received.emit("Server stopped.")
 
+    def printHexToConsole(self, _data:bytes, nbytes_perLine=0, tot_bytes=0):
+        _counter = 0
+        _line_counter = 0
+        _tot_counter = 0
+        for _byte in _data:
+            # print(f'_byte', end='')
+            # print(' 0X'.join('{:02X}'.format(_byte)), end='')
+            print(f' 0X{_byte:02X}', end='')
+            _counter += 1
+            if nbytes_perLine != 0:
+                if _counter == nbytes_perLine:
+                    print(' ')
+                    if _tot_counter >= tot_bytes:
+                        return
+                    else:
+                        _tot_counter += _counter
+                        _counter = 0
+
+    def printHexToConsoleShort(self, _data: bytes, nwords_perLine=0, tot_words=0):
+        _counter = 0
+        _tot_counter = 0
+
+        # Convert the byte data to 16-bit integers (Little Endian)
+        num_shorts = len(_data) // 2  # Each short is 2 bytes
+        shorts = struct.unpack('<' + 'H' * num_shorts, _data[:num_shorts * 2])  # Convert to 16-bit words
+
+        for short in shorts:
+            print(f' 0X{short:04X}', end='')  # Print each 16-bit word in hex format
+
+            _counter += 1
+            if nwords_perLine != 0 and _counter == nwords_perLine:
+                print()  # New line
+                if _tot_counter >= tot_words:
+                    return
+                _tot_counter += _counter
+                _counter = 0
+        print()  # Ensure final newline
+
     @pyqtSlot()
     def stop(self):
         """Stop the server thread."""
@@ -187,11 +259,6 @@ class ServerThread(QThread):
 
     @pyqtSlot()
     def send_sample_data(self, _data):
-        """Send sample data to all connected clients."""
-        sample = "Sample data from server."
-        # Convert the sample text to bytes.
-        data = sample.encode()
-        # Send to each client socket
         for client in self.clients.copy():
             try:
                 client.sendall(_data)
