@@ -1,3 +1,12 @@
+# PDDAU_V1.3 Virtual PDDAU Python Implementation
+
+... <br>
+... <br>
+
+The requirement is to generate 16 channels of data and send it to the connected 
+tcp socket client. In our case LU or PDCU is the client device. At present stage 
+the simulator only sends 4 channels of data packed as a data structure. 
+
 # PDDAU_V1.1 Virtual PDDAU Python Implementation
 
 ... <br>
