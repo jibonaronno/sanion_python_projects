@@ -9,6 +9,8 @@ import numpy as np
 # '<' specifies little-endian. Adjust if you need big-endian (use '>').
 HEADER_FORMAT = "<BBh"          # msg_id (B), msg_type (B), body_len (h)
 
+NUM_CHANNEL = 4
+
 #NUM_SAMPLES = 128
 NUM_SAMPLES = 1024
 # AMPLITUDE = 32767  # Max value for 16-bit signed integer
@@ -59,10 +61,10 @@ class MsgPdBody:
 class MsgPdFullPacket:
     def __init__(self, msg_type):
         # self.header = SpectrumPacketHeader(0x01, 0x11, 4 * (NUM_SAMPLES * 2 + 4))
-        self.header = SpectrumPacketHeader(0x01, msg_type, 4 * (NUM_SAMPLES * 2 + 4))
+        self.header = SpectrumPacketHeader(0x01, msg_type, NUM_CHANNEL * (NUM_SAMPLES * 2 + 4))
         self.sine_wave = generate_sine_wave().byteswap().tobytes()
         self.sine_wave_raw = generate_sine_wave()
-        self.data = [MsgPdBody(data=self.sine_wave) for _ in range(4)]
+        self.data = [MsgPdBody(data=self.sine_wave) for _ in range(NUM_CHANNEL)]
 
     def to_bytes(self):
         packet = self.header.to_bytes()
