@@ -167,9 +167,9 @@ class ServerThread(QThread):
                                     print(str(e))
                                     break
                                 # self.usleep(217)
-                                # self.sleep(10)
+                                #self.sleep(10)
                                 self.usleep(40000)
-                                # self.printHexToConsole(self.packet_loop, 20, 128)
+                                self.printHexToConsole(self.packet_loop, 20, 40)
                                 #### self.printHexToConsoleShort(self.packet_loop[500:], 20, 128)
                                 # self.msleep(10000)
                                 if packet_send_counter >= 60:

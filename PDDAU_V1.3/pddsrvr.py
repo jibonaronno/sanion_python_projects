@@ -9,7 +9,7 @@ import numpy as np
 # '<' specifies little-endian. Adjust if you need big-endian (use '>').
 HEADER_FORMAT = "<BBh"          # msg_id (B), msg_type (B), body_len (h)
 
-NUM_CHANNEL = 4
+NUM_CHANNEL = 16
 
 #NUM_SAMPLES = 128
 NUM_SAMPLES = 1024
@@ -45,7 +45,8 @@ class SpectrumPacketHeader:
         self.body_len = body_len
 
     def to_bytes(self):
-        return struct.pack("<BBh", self.msg_id, self.msg_type, self.body_len)
+        # return struct.pack("<BBh", self.msg_id, self.msg_type, self.body_len)
+        return struct.pack("<BBH", self.msg_id, self.msg_type, self.body_len)
 
 class MsgPdBody:
     def __init__(self, ch_idx=0, EventAmpTh1=0, EventAmpTh2=0, EventPpsTh=0, data=None):
