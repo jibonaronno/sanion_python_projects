@@ -162,6 +162,8 @@ class ServerThread(QThread):
                                 self.send_sample_data(self.packet_start)
                             print("Start Sending Data Stream")
                             self.usleep(10000)
+                            print("Waitin 10 Second")
+                            self.sleep(10)
 
                             while 1:
                                 try:
@@ -170,8 +172,9 @@ class ServerThread(QThread):
                                     print(str(e))
                                     break
                                 # self.usleep(217)
-                                # self.sleep(10)
-                                self.usleep(40000)
+                                # self.sleep(1)
+                                # self.usleep(80000)
+                                self.usleep(40000) # For 60 Cycle Per Sec
                                 # self.printHexToConsole(self.packet_loop, 20, 128)
                                 #### self.printHexToConsoleShort(self.packet_loop[500:], 20, 128)
                                 # self.msleep(10000)
