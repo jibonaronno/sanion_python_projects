@@ -61,7 +61,7 @@ class MainWindow(QMainWindow):
 
         # self.pdsrvr = PddSrvr(self.event_pddthread_stop, self.send_samples)
         # self.server_thread = threading.Thread(target=self.pdsrvr.run_server)
-        self.server_thread = ServerThread(host='192.168.246.147', port = 5000)
+        self.server_thread = ServerThread(host='192.168.10.99', port = 5000)
         self.server_thread.received.connect(self.on_ServerThraedSignalCallback)
 
         try:
