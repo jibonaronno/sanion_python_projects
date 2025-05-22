@@ -131,7 +131,10 @@ class CompareChartWidget(QWidget):
 
         self.injectRawDataStreamToGraphSize(4000)
 
-        self.printHexToConsoleShort(bytearray(self.charts01.flowdata)[500:], 20, 128)
+        ### self.printHexToConsoleShort(bytearray(self.charts01.flowdata)[500:], 20, 128)
+
+        self.printHexToConsoleShort(bytearray(self.charts01.flowdata)[0:], 20, 100)
+
         # self.showKalmann()
 
     def prepareExport(self):
