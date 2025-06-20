@@ -9,7 +9,7 @@ import numpy as np
 # '<' specifies little-endian. Adjust if you need big-endian (use '>').
 HEADER_FORMAT = "<BBh"          # msg_id (B), msg_type (B), body_len (h)
 
-NUM_CHANNEL = 4
+NUM_CHANNEL = 2
 
 #NUM_SAMPLES = 128
 NUM_SAMPLES = 1024

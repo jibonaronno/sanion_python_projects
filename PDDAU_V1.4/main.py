@@ -133,4 +133,3 @@ if __name__ == '__main__':
     # mw.showFullScreen()
     mw.showNormal()
     sys.exit(app.exec_())
-
