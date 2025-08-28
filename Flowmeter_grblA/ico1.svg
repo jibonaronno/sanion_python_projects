@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="143.62204"
+   height="94.48819"
+   viewBox="0 0 38 25"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.2-dev (9ee32be, 2021-06-19)"
+   sodipodi:docname="ico1.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="px"
+     showgrid="false"
+     inkscape:zoom="0.72819698"
+     inkscape:cx="466.90663"
+     inkscape:cy="197.74869"
+     inkscape:window-width="1316"
+     inkscape:window-height="798"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1"
+     units="px" />
+  <defs
+     id="defs2">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient1335">
+      <stop
+         style="stop-color:#2b0000;stop-opacity:1;"
+         offset="0"
+         id="stop1331" />
+      <stop
+         style="stop-color:#2bc72e;stop-opacity:0.69767439;"
+         offset="0.88596493"
+         id="stop1333" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient1335"
+       id="linearGradient1337"
+       x1="53.042255"
+       y1="74.256729"
+       x2="93.930252"
+       y2="74.256729"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.57604643,0,0,2.0156524,-24.300043,-137.07968)" />
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       style="opacity:0.2;fill:url(#linearGradient1337);fill-opacity:1;stroke:#000000;stroke-width:0.274807px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 6.3283163,7.2783514 H 29.734693 V 17.913786 H 6.3324783 Z"
+       id="path198"
+       sodipodi:nodetypes="ccccc" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       x="6.3584561"
+       y="16.441145"
+       id="text3763"><tspan
+         sodipodi:role="line"
+         id="tspan3761"
+         style="stroke-width:0.264583"
+         x="6.3584561"
+         y="16.441145">SAM</tspan></text>
+  </g>
+</svg>
