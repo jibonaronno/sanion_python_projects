@@ -67,6 +67,13 @@ _CMD_16 = [0x09, 0x04, 0x00, 0x04, 0x00, 0x02, 0x31, 0x42]
 _CMD_17 = [0x0A, 0x04, 0x00, 0x00, 0x00, 0x02, 0x70, 0xB0]
 _CMD_18 = [0x0A, 0x04, 0x00, 0x22, 0x00, 0x02, 0xD0, 0xBA]
 _CMD_19 = [0x0A, 0x04, 0x00, 0x04, 0x00, 0x02, 0x31, 0x71]
+
+_GRBL_CMD_01 = [24]
+_GRBL_CMD_02 = [24]
+_GRBL_CMD_03 = [24]
+_GRBL_CMD_04 = [24, 0x0D, 0x0A]
+_GRBL_CMD_05 = [24, 0x0D, 0x0A]
+
 class MainWindow(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
@@ -88,25 +95,10 @@ class MainWindow(QMainWindow):
         self.selectedPort = ""
 
         self.cmdlist = []
-        self.cmdlist.append(_CMD_1)
-        self.cmdlist.append(_CMD_2)
-        self.cmdlist.append(_CMD_3)
-        self.cmdlist.append(_CMD_4)
-        self.cmdlist.append(_CMD_5)
-        self.cmdlist.append(_CMD_6)
-        self.cmdlist.append(_CMD_7)
-        self.cmdlist.append(_CMD_8)
-        self.cmdlist.append(_CMD_9)
-        self.cmdlist.append(_CMD_10)
-        self.cmdlist.append(_CMD_11)
-        self.cmdlist.append(_CMD_12)
-        self.cmdlist.append(_CMD_13)
-        self.cmdlist.append(_CMD_14)
-        self.cmdlist.append(_CMD_15)
-        self.cmdlist.append(_CMD_16)
-        self.cmdlist.append(_CMD_17)
-        self.cmdlist.append(_CMD_18)
-        self.cmdlist.append(_CMD_19)
+        self.cmdlist.append(_GRBL_CMD_01)
+        self.cmdlist.append(_GRBL_CMD_02)
+        self.cmdlist.append(_GRBL_CMD_03)
+        self.cmdlist.append(_GRBL_CMD_04)
 
         #List only usb-ttl ports in self.portListBox QListWidget
         self.ports = list(port_list.comports())
@@ -243,7 +235,7 @@ class MainWindow(QMainWindow):
         if self.selectedPort != "":
             if not self.sensorPortOpen:
                 try:
-                    self.serialSensor = serial.Serial(self.selectedPort, baudrate=9600, timeout=0)
+                    self.serialSensor = serial.Serial(self.selectedPort, baudrate=115200, timeout=0)
                     self.sensorPortOpen = True
                 except serial.SerialException as ex:
                     self.sensorPortOpen = False
@@ -265,25 +257,11 @@ class MainWindow(QMainWindow):
 
     @Slot()
     def on_btn2_clicked(self):
-        self.mimic.show() # Enable This Line to show the Mimic without starting sensorThread.
+        # self.mimic.show() # Enable This Line to show the Mimic without starting sensorThread.
         if self.sensorPortOpen:
             if not self.sensorThreadCreated:
                 self.startSensorThread()
             self.mimic.show()
-
-    @Slot()
-    def on_btn3_clicked(self):
-        ''' Example code to insert data in database
-        #self.db.insert_meter_data_hard()
-        '''
-        self.dtv.summery = True
-        self.dtv.showNormal()
-
-
-    @Slot()
-    def on_btn4_clicked(self):
-        self.dtv.summery = None
-        self.dtv.showNormal()
 
     @Slot()
     def on_btnPause_clicked(self):

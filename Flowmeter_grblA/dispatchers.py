@@ -27,11 +27,13 @@ class PrimaryThread(QObject):
     def run(self):
         unit = []
         hexformat = ''
+        strformat = ''
         inhex = ''
+        _tx_cmd = ''
         while True:
             try:
                 if self.pause:
-                    time.sleep(100)
+                    time.sleep(0.5)
                     continue
                 for line in self.codelist:
                     if self.flagStop:
@@ -57,13 +59,19 @@ class PrimaryThread(QObject):
                         print('Ex in sensor Thread readline() 49 : ' + str(e))
                     for hx in unit:
                         hexformat = hexformat + '{0:02X} '.format(hx)
+
                     for hx in line:
                         inhex = inhex + '{0:02X} '.format(hx)
+                        _tx_cmd = _tx_cmd + '{}'.format(hx)
+                    strformat = unit.decode('utf-8')
                     unit = b''
                     #self.signal.emit(str(line).format("")+ " - " + hexformat)
-                    self.signal.emit(inhex + "- " + hexformat)
+                    # self.signal.emit(inhex + "- " + hexformat)
+                    self.signal.emit(_tx_cmd + " - " + strformat)
+                    _tx_cmd = ''
                     hexformat = ''
                     inhex = ''
+                    strformat = ''
 
             except serial.SerialException as ex:
                 print("Error In SerialException" + ex.strerror)
