@@ -10,6 +10,7 @@ from qtpy.QtCore import Slot, QTimer, QThread, Signal, QObject, Qt, QMutex
 
 class PrimaryThread(QObject):
     signal = Signal(str)
+    cmd_signal = Signal(str)
 
     def __init__(self, serialPort, cmdlist):
         self.serialPort = serialPort
@@ -43,7 +44,7 @@ class PrimaryThread(QObject):
                     try:
                         print('Sending Cmd')
                         self.serialPort.write(line)
-                        time.sleep(1)
+                        time.sleep(5)
                         in_waiting = self.serialPort.in_waiting
                         if in_waiting == 0:
                             time.sleep(1)
@@ -62,17 +63,19 @@ class PrimaryThread(QObject):
 
                     for hx in line:
                         inhex = inhex + '{0:02X} '.format(hx)
-                        _tx_cmd = _tx_cmd + '{}'.format(hx)
+                        _tx_cmd = _tx_cmd + '{}'.format(hx) # hx.decode("utf-8")
                     strformat = unit.decode('utf-8')
                     unit = b''
                     #self.signal.emit(str(line).format("")+ " - " + hexformat)
                     # self.signal.emit(inhex + "- " + hexformat)
-                    self.signal.emit(_tx_cmd + " - " + strformat)
+                    self.signal.emit(str(line) + " - " + strformat)
                     _tx_cmd = ''
                     hexformat = ''
                     inhex = ''
                     strformat = ''
 
+                self.pause = True
+                self.cmd_signal.emit("PAUSE")
             except serial.SerialException as ex:
                 print("Error In SerialException" + ex.strerror)
                 self.signal.emit("Stopped")

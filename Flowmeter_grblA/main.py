@@ -69,10 +69,11 @@ _CMD_18 = [0x0A, 0x04, 0x00, 0x22, 0x00, 0x02, 0xD0, 0xBA]
 _CMD_19 = [0x0A, 0x04, 0x00, 0x04, 0x00, 0x02, 0x31, 0x71]
 
 _GRBL_CMD_01 = [24]
-_GRBL_CMD_02 = [24]
-_GRBL_CMD_03 = [24]
-_GRBL_CMD_04 = [24, 0x0D, 0x0A]
-_GRBL_CMD_05 = [24, 0x0D, 0x0A]
+_GRBL_CMD_02 = b'G1 X100 Y50 F1500\r'
+_GRBL_CMD_03 = b'G1 X0 Y0 F1500\r'
+_GRBL_CMD_04 = b'G1 X50 Y150 F1500\r'
+_GRBL_CMD_05 = b'G1 X0 Y0 F1500\r'
+_GRBL_CMD_06 = b'G92 X0 Y0\r'
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -96,9 +97,11 @@ class MainWindow(QMainWindow):
 
         self.cmdlist = []
         self.cmdlist.append(_GRBL_CMD_01)
+        self.cmdlist.append(_GRBL_CMD_06)
         self.cmdlist.append(_GRBL_CMD_02)
         self.cmdlist.append(_GRBL_CMD_03)
         self.cmdlist.append(_GRBL_CMD_04)
+        self.cmdlist.append(_GRBL_CMD_05)
 
         #List only usb-ttl ports in self.portListBox QListWidget
         self.ports = list(port_list.comports())
@@ -138,6 +141,7 @@ class MainWindow(QMainWindow):
                 self.sensorThread = QThread()
                 self.sensorThread.started.connect(self.sensor.run)
                 self.sensor.signal.connect(self.sensorData)
+                self.sensor.cmd_signal.connect(self.sensorCmd)
                 self.sensor.moveToThread(self.sensorThread)
                 self.sensorThread.start()
                 self.sensorThreadCreated = True
@@ -229,6 +233,12 @@ class MainWindow(QMainWindow):
         self.mimic.repaint()
         if(self.msgListBox.count() > 10):
             self.msgListBox.clear()
+
+    def sensorCmd(self, data_stream):
+        if data_stream == "PAUSE":
+            self.btnPause.setText("Start")
+            self.sensor.pause = True
+
 
     @Slot()
     def on_btn1_clicked(self):
